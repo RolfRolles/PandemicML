@@ -1,0 +1,20 @@
+Z3ModelLexer.cmo: Z3ModelParser.cmi
+Z3ModelLexer.cmx: Z3ModelParser.cmx
+Z3ModelParser.cmo: Z3TextualParsedModel.cmi Z3ModelParser.cmi
+Z3ModelParser.cmx: Z3TextualParsedModel.cmi Z3ModelParser.cmi
+Z3SymbolicExecute-in_progress.cmo: ../Z3\z3.cmi ../IR\PpIR.cmi \
+    ../IR\IRUtil.cmo ../IR\IRTypeCheck.cmi ../IR\IRSSA.cmo \
+    ../IR\IRLocalOpt.cmi ../IR\IR.cmi
+Z3SymbolicExecute-in_progress.cmx: ../Z3\z3.cmx ../IR\PpIR.cmx \
+    ../IR\IRUtil.cmx ../IR\IRTypeCheck.cmx ../IR\IRSSA.cmx \
+    ../IR\IRLocalOpt.cmx ../IR\IR.cmi
+Z3SymbolicExecute.cmo: ../Z3\z3.cmi ../IR\PpIR.cmi ../IR\IRUtil.cmo \
+    ../IR\IRTypeCheck.cmi ../IR\IR.cmi
+Z3SymbolicExecute.cmx: ../Z3\z3.cmx ../IR\PpIR.cmx ../IR\IRUtil.cmx \
+    ../IR\IRTypeCheck.cmx ../IR\IR.cmi
+Z3Util.cmo: Z3TextualParsedModel.cmi Z3ModelParser.cmi Z3ModelLexer.cmo \
+    ../Z3\z3.cmi
+Z3Util.cmx: Z3TextualParsedModel.cmi Z3ModelParser.cmx Z3ModelLexer.cmx \
+    ../Z3\z3.cmx
+Z3ModelParser.cmi: Z3TextualParsedModel.cmi
+Z3TextualParsedModel.cmi:

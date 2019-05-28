@@ -1,0 +1,33 @@
+Known bugs in X86Encode/X86Decode:
+* I'm very confused by the Ev encodings of JmpF/CallF.
+
+Known bugs in X86Decode:
+
+OK ... it seems like the presence of the byte 0x9B, which decodes to WAIT (synonymous with FWAIT), changes the mnemonic of six other instructions:
+
+| Finit  (* | Fninit when paired with Wait *)  DB NO OPERANDS
+| Fclex  (* | Fnclex when paired with Wait *)  DB NO OPERANDS
+| Fstcw  (* | Fnstcw when paired with Wait *)  D9 oEw
+| Fstenv (* | Fnstenv when paired with Wait *) D9 oFPEnvLow
+| Fsave  (* | Fnsave when paired with Wait *)  DD oFPEnv
+| Fstsw  (* | Fnstsw when paired with Wait *)  DF oEw or oAX
+
+Ghetto way of doing this:
+Decode instruction
+  let ((m,o) as i) = decode table_index in
+  match m with
+  | Wait ->
+    let curr_ea = get_cursor () in
+    let nb = consume_byte () in
+    match nb with
+    | 0xDBl | 0xD9l | 0xDDl | 0xDFl -> 
+      let ((m2,o2) as i2) = decode (Int32.to_int nb) in
+     (match m2 with
+      | 
+    | _ -> decr_ea ()
+  | _ ->
+
+This is fucking complicated.  I'm going to bed.
+
+Known bugs in IRTranslator:
+* ZPS flags are not predicated for Shl/Shr/Sar/Sal/Ror/Ror/Rcl/Rcr

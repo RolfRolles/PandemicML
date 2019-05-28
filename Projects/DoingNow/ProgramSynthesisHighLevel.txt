@@ -1,0 +1,19 @@
+Here's a simple example of program synthesis.  Let's say I want to synthesize a unary function that increments its operand.  As building blocks, I allow it to use two unary operators (chosen from NEG and/or NOT).  I.e. the space of legal functions is NEG(NEG(x)), NEG(NOT(x)), NOT(NEG(x)), and NOT(NOT(x)).  What we want to know is:  does _there exist_ one of these functions f such that, _for all_ input values x, we have that f(x) = x+1?  We encode this as a first-order formula, using a trick to represent the function space:
+
+; Does ... 
+(declare-fun Bool () f1_is_neg) ; There exists a boolean f1_is_neg such that
+(declare-fun Bool () f2_is_neg) ; There exists a boolean f2_is_neg such that
+
+(assert
+  (forall ((x (_ BitVec 32))) ; For all input values x,
+  (let ((z (ite f1_is_neg (bvneg x) (bvnot x)))) ; z = f1_is_neg ? -x : ~x;,
+  (let ((y (ite f2_is_neg (bvneg z) (bvnot z)))) ; y = f2_is_neg ? -z : ~z;,
+  (= y (bvadd x #x00000001)))))) ; f(x) = y = x + 1?
+
+The solution to this formula, if it exists, is some values of the boolean variables f[1,2]_is_neg that guarantee that the composition of the corresponding neg/not functions satisfies f(x) = x+1.
+
+After I learned what program synthesis was, I realized that ROP compilation and the more general notion of "shellcode construction" are both program synthesis.  Consider:  we need a piece of shellcode that does something specific while conforming to some character restriction/encoding.  The first part of that can be handled with techniques like the above (a semantic specification).  The second part is expressed as a constraint on the bytes corresponding to the machine code of the generated code (a syntactic specification).  I.e. the only difference from ordinary template-based program synthesis is that we make the solver encode the instructions, and we issue additional constraints regarding the bytes in the instruction encodings.
+
+I.e., every possible instance of the straight-line shellcode generation problem is solved by the same class of formulae.  And given that the logical system in which these formulae are expressed (the Bernays-Schoenfinkel fragment of first-order logic over the background theories of bitvectors, extensional arrays and equality) is decidable and PSPACE-complete, this is what mathematicians call "a solved problem".  So in theory, I solved that problem completely.  In practice, we even have algorithms for solving these problems.  However, I haven't actually tried it, but I suspect that large instances would probably nuke the solver.
+
+The next logical question is, do I care that it likely will not work in practice for large instances?  Of course not, because that is not the point.  The point is that what's laid out above is a theorem, immutably true.  The fact that I discovered it myself also makes me happy.

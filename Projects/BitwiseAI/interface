@@ -1,0 +1,68 @@
+type abstract_bit = AbsZero | AbsOne | AbsHalf
+val string_of_abstract_bit : abstract_bit -> string
+val string_of_abstract_bitvector : abstract_bit array -> string
+type absvalue =
+    AbsValue of abstract_bit array
+  | AbsMem of (int64 -> abstract_bit array)
+val int_of_abstract_bit : abstract_bit -> int
+val abstract_bv_of_constant : int64 -> IR.typereg -> abstract_bit array
+val abstract_bitwise_op :
+  abstract_bit array array ->
+  abstract_bit array -> abstract_bit array -> abstract_bit array
+val abstract_xor_table : abstract_bit array array
+val abstract_or_table : abstract_bit array array
+val abstract_and_table : abstract_bit array array
+val abstract_not_table : abstract_bit array
+val abstract_shift :
+  'a ->
+  ('a array -> 'b array -> int -> int -> 'c) -> 'b array -> int -> 'a array
+val shr : 'a array -> 'a array -> int -> int -> unit
+val abstract_add_or_sub :
+  abstract_bit ->
+  ('a -> abstract_bit array) ->
+  abstract_bit array -> 'a -> abstract_bit array
+val replace_ones_with_halves : abstract_bit array -> abstract_bit array
+val abstract_widening_shl :
+  int -> abstract_bit array -> int -> abstract_bit array
+val abstract_equality_compare :
+  abstract_bit ->
+  abstract_bit ->
+  abstract_bit array -> abstract_bit array -> abstract_bit array
+val make_top : IR.typereg -> abstract_bit array
+val value_wrapped_abstract_binop :
+  (abstract_bit array -> abstract_bit array -> abstract_bit array) ->
+  absvalue -> absvalue -> absvalue
+val abstract_and : absvalue -> absvalue -> absvalue
+val abstract_xor : absvalue -> absvalue -> absvalue
+val abstract_or : absvalue -> absvalue -> absvalue
+val abstract_add : absvalue -> absvalue -> absvalue
+val abstract_sub : absvalue -> absvalue -> absvalue
+val abstract_umul : absvalue -> absvalue -> absvalue
+val abstract_eq : absvalue -> absvalue -> absvalue
+val abstract_ne : absvalue -> absvalue -> absvalue
+val value_wrapped_abstract_shift :
+  (abstract_bit array -> 'a -> abstract_bit array) ->
+  absvalue -> 'a -> absvalue
+val abstract_shl : absvalue -> int -> absvalue
+val abstract_shr : absvalue -> int -> absvalue
+val abstract_sar : absvalue -> int -> absvalue
+val value_wrapped_abstract_unop :
+  (abstract_bit array -> abstract_bit array) -> absvalue -> absvalue
+val abstract_not : absvalue -> absvalue
+val abstract_neg : absvalue -> absvalue
+val unwrap_abstract_value : absvalue -> abstract_bit array
+val unwrap_abstract_memory : absvalue -> int64 -> abstract_bit array
+val make_constant_opt : abstract_bit array -> IR.expr option
+val default_abstract_memory : 'a -> abstract_bit array
+val abstract_load : 'a -> ('a -> 'b) -> 'b
+val abstract_store : 'a -> 'b -> ('b -> 'a) -> 'b -> 'a
+val default_abstract_value : IR.var -> absvalue
+val varctx : (IR.var, absvalue) Hashtbl.t
+val lookup_varctx : IR.var -> absvalue
+val assign_varctx : IR.var -> absvalue -> unit
+val bitwise_abstract_interpret : IR.expr -> absvalue * IR.expr
+val bitwise_abstract_interpret_instr : IR.instr -> IR.instr
+val bitwise_abstract_interpret_instr_list : IR.instr list -> IR.instr list
+val bitwise_abstract_interpret_ir :
+  (IR.var * IR.expr) list -> IR.instr list -> IR.instr list
+val test : int -> unit

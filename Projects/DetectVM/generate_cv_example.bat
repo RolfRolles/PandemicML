@@ -1,0 +1,1 @@
+"C:\work\obfuscators\Code.Virtualizer.1.3.8\Virtualizer.exe" /protect "C:\work\obfuscators\Code.Virtualizer.1.3.8\generate.cv"

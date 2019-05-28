@@ -1,0 +1,10 @@
+AnalyzeInstruction.cmo: SynthesisIR.cmo RegUtil.cmo Generator.cmo
+AnalyzeInstruction.cmx: SynthesisIR.cmx RegUtil.cmx Generator.cmx
+DoX86.cmo: SynthesisIR.cmo RegUtil.cmo Generator.cmo AnalyzeInstruction.cmo
+DoX86.cmx: SynthesisIR.cmx RegUtil.cmx Generator.cmx AnalyzeInstruction.cmx
+Generator.cmo:
+Generator.cmx:
+RegUtil.cmo:
+RegUtil.cmx:
+SynthesisIR.cmo: RegUtil.cmo Generator.cmo
+SynthesisIR.cmx: RegUtil.cmx Generator.cmx

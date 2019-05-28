@@ -1,0 +1,60 @@
+Sse(Direct(Cvtps2pi,[oPpi;oWps]),Direct(Cvtss2si,[oGd_q;oWss]),Direct(Cvtpd2pi,[oQpi;oWpd]),Direct(Cvtsd2si,[oGd_q;oWsd])); (* 0x12D *)
+Qpi and Wpd are both E-PARTS; Qpi needs to be Ppi                               ^^^^^^^^^
+
+In the description of the instruction AAA, the manuals state that this instruction behaves as follows:
+
+let aland = (IRUtil.mk_and eAl (mk_byte 0xFL)) in
+let cond  = mk_or (mk_eq eAF (mk_true)) (mk_ult (mk_byte 9L) aland) in
+
+if cond
+then
+  AL <- AL + 6
+  AH <- AH + 1
+  AF <- 1
+  CF <- 1
+  AL <- AL AND 0FH
+else
+  AF <- 0
+  CF <- 0
+  AL <- AL AND 0FH
+end
+
+However, random testing against the CPU reveals otherwise.  Consider for example this failure case (I can generate millions just like it):
+
+aaa :: EAX 7d7d7ffc AF 0
+EAX: Real 7d7d8102, Interpreted 7d7d8002
+
+Here we have al = 0xFC, so al & 0x0F = 0x0C.  According to the manuals, since AL > 0x09, we add six to AL, which gives us 0x02, and then we increment AH by one, giving us 0x80.  This is what my interpreter produces.  However, the processor actually produces 0x81_02, which means that it's actually adding 6 to AX, not to AL.  The comments for Bochs says the same thing:
+
+  /*
+   *  Note: This instruction incorrectly documented in Intel's materials.
+   *        The right description is:
+   *
+   *    IF (((AL and 0FH) > 9) or (AF==1)
+   *    THEN
+   *        IF CPU<286 THEN {  AL <- AL+6 }
+   *                   ELSE {  AX <- AX+6 }
+   *        AH <- AH+1
+   *        CF <- 1
+   *        AF <- 1
+   *    ELSE
+   *        CF <- 0
+   *        AF <- 0
+   *    ENDIF
+   *	AL <- AL and 0Fh
+   */	
+
+  if (((AL & 0x0f) > 9) || get_AF())
+  {
+    AX = AX + 0x106; // 0x106?
+    assert_AF();
+    assert_CF();
+  }
+  else {
+    clear_AF();
+    clear_CF();
+  }
+
+  AL = AL & 0x0f;
+
+The same bug exists in the documentation for AAS, and the same workaround applies.

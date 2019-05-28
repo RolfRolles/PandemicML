@@ -1,0 +1,8 @@
+BitwiseAI.cmo: BitwiseAI.cmi
+BitwiseAI.cmx: BitwiseAI.cmi
+BitwiseAINewInterface.cmo: BitwiseAINewInterface.cmi
+BitwiseAINewInterface.cmx: BitwiseAINewInterface.cmi
+bitwise_AI.cmo:
+bitwise_AI.cmx:
+BitwiseAI.cmi:
+BitwiseAINewInterface.cmi:

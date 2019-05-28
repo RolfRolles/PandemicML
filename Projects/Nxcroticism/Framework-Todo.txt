@@ -1,0 +1,4 @@
+Framework Changes:
+
+Sort out the Printf.printf / IDA.msg duality
+Add a PE parsing package.  Big job!

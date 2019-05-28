@@ -1,0 +1,33 @@
+What does it actually mean when we say that we want to create a shellcode, subject to a particular set of character restrictions, that does something specific?
+
+Let's break that down.
+* Create a shellcode...
+
+A shellcode is a program:  a machine code program.  Machine code is what results from assembling an assembly language program.  To be specific:  our task is to *create a machine/assembly language program*.
+
+* Subject to a particular set of character restrictions.
+
+The machine code bytes must satisfy some specific condition in order to be valid.  Example conditions:
+
+-Contains no NULL bytes
+-Contains no 25 '%' bytes
+-Is alphanumeric
+-Is Utf-8
+-Is Unicode
+-Etc.
+
+* A shellcode that does something specific.
+
+When we say that it "does something specific", we mean that we have a "specification" of what the program is supposed to do when we run it.
+
+* Create a machine-code program from within the space of legal byte sequences that accomplishes a task of my choosing when executed.
+
+Program synthesis
+-----------------
+
+Give my previous example.
+
+Adapting program synthesis to machine code
+------------------------------------------
+
+In the previous example, we did not have a notion of a 

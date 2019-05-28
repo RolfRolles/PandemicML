@@ -1,0 +1,25 @@
+Microsoft (R) COFF/PE Dumper Version 9.00.30729.01
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+Dump of file blob1.vmp.exe
+
+File Type: EXECUTABLE IMAGE
+
+SECTION HEADER #6
+   .vmp2 name
+    C96E virtual size
+    A000 virtual address (0040A000 to 0041696D)
+    CA00 size of raw data
+     600 file pointer to raw data (00000600 to 0000CFFF)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+E2000060 flags
+         Code
+         Initialized Data
+         Discardable
+         Execute Read Write
+
+RAW DATA #6

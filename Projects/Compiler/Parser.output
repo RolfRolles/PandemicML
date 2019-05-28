@@ -1,0 +1,375 @@
+   0  $accept : %entry% $end
+
+   1  typename : LCNAME
+   2           | LPAREN typename RPAREN
+   3           | typename TIMES typename
+   4           | typename ARROW typename
+
+   5  recordel : LCNAME COLON typename
+
+   6  recordellist : recordel recordellist
+   7               |
+
+   8  variant : UCNAME
+   9          | UCNAME OF typename
+
+  10  variantlist1 : PIPE variant variantlist1
+  11               |
+
+  12  variantlist : variantlist1
+  13              | variant variantlist1
+
+  14  typedecl : TYPE LCNAME EQ LBRACE recordellist RBRACE
+  15           | TYPE LCNAME EQ variantlist
+
+  16  typedecllist : typedecl typedecllist
+  17               |
+
+  18  top : typedecllist EOF
+
+  19  %entry% : '\001' top
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . top  (19)
+	typedecllist : .  (17)
+
+	TYPE  shift 3
+	EOF  reduce 17
+
+	top  goto 4
+	typedecl  goto 5
+	typedecllist  goto 6
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	typedecl : TYPE . LCNAME EQ LBRACE recordellist RBRACE  (14)
+	typedecl : TYPE . LCNAME EQ variantlist  (15)
+
+	LCNAME  shift 7
+	.  error
+
+
+state 4
+	%entry% : '\001' top .  (19)
+
+	.  reduce 19
+
+
+state 5
+	typedecllist : typedecl . typedecllist  (16)
+	typedecllist : .  (17)
+
+	TYPE  shift 3
+	EOF  reduce 17
+
+	typedecl  goto 5
+	typedecllist  goto 8
+
+
+state 6
+	top : typedecllist . EOF  (18)
+
+	EOF  shift 9
+	.  error
+
+
+state 7
+	typedecl : TYPE LCNAME . EQ LBRACE recordellist RBRACE  (14)
+	typedecl : TYPE LCNAME . EQ variantlist  (15)
+
+	EQ  shift 10
+	.  error
+
+
+state 8
+	typedecllist : typedecl typedecllist .  (16)
+
+	.  reduce 16
+
+
+state 9
+	top : typedecllist EOF .  (18)
+
+	.  reduce 18
+
+
+state 10
+	typedecl : TYPE LCNAME EQ . LBRACE recordellist RBRACE  (14)
+	typedecl : TYPE LCNAME EQ . variantlist  (15)
+	variantlist1 : .  (11)
+
+	UCNAME  shift 11
+	LBRACE  shift 12
+	PIPE  shift 13
+	EOF  reduce 11
+	TYPE  reduce 11
+
+	variant  goto 14
+	variantlist1  goto 15
+	variantlist  goto 16
+
+
+state 11
+	variant : UCNAME .  (8)
+	variant : UCNAME . OF typename  (9)
+
+	OF  shift 17
+	EOF  reduce 8
+	TYPE  reduce 8
+	PIPE  reduce 8
+
+
+state 12
+	typedecl : TYPE LCNAME EQ LBRACE . recordellist RBRACE  (14)
+	recordellist : .  (7)
+
+	LCNAME  shift 18
+	RBRACE  reduce 7
+
+	recordel  goto 19
+	recordellist  goto 20
+
+
+state 13
+	variantlist1 : PIPE . variant variantlist1  (10)
+
+	UCNAME  shift 11
+	.  error
+
+	variant  goto 21
+
+
+state 14
+	variantlist : variant . variantlist1  (13)
+	variantlist1 : .  (11)
+
+	PIPE  shift 13
+	EOF  reduce 11
+	TYPE  reduce 11
+
+	variantlist1  goto 22
+
+
+state 15
+	variantlist : variantlist1 .  (12)
+
+	.  reduce 12
+
+
+state 16
+	typedecl : TYPE LCNAME EQ variantlist .  (15)
+
+	.  reduce 15
+
+
+state 17
+	variant : UCNAME OF . typename  (9)
+
+	LCNAME  shift 23
+	LPAREN  shift 24
+	.  error
+
+	typename  goto 25
+
+
+state 18
+	recordel : LCNAME . COLON typename  (5)
+
+	COLON  shift 26
+	.  error
+
+
+state 19
+	recordellist : recordel . recordellist  (6)
+	recordellist : .  (7)
+
+	LCNAME  shift 18
+	RBRACE  reduce 7
+
+	recordel  goto 19
+	recordellist  goto 27
+
+
+state 20
+	typedecl : TYPE LCNAME EQ LBRACE recordellist . RBRACE  (14)
+
+	RBRACE  shift 28
+	.  error
+
+
+state 21
+	variantlist1 : PIPE variant . variantlist1  (10)
+	variantlist1 : .  (11)
+
+	PIPE  shift 13
+	EOF  reduce 11
+	TYPE  reduce 11
+
+	variantlist1  goto 29
+
+
+state 22
+	variantlist : variant variantlist1 .  (13)
+
+	.  reduce 13
+
+
+state 23
+	typename : LCNAME .  (1)
+
+	.  reduce 1
+
+
+state 24
+	typename : LPAREN . typename RPAREN  (2)
+
+	LCNAME  shift 23
+	LPAREN  shift 24
+	.  error
+
+	typename  goto 30
+
+
+state 25
+	typename : typename . TIMES typename  (3)
+	typename : typename . ARROW typename  (4)
+	variant : UCNAME OF typename .  (9)
+
+	ARROW  shift 31
+	TIMES  shift 32
+	EOF  reduce 9
+	TYPE  reduce 9
+	PIPE  reduce 9
+
+
+state 26
+	recordel : LCNAME COLON . typename  (5)
+
+	LCNAME  shift 23
+	LPAREN  shift 24
+	.  error
+
+	typename  goto 33
+
+
+state 27
+	recordellist : recordel recordellist .  (6)
+
+	.  reduce 6
+
+
+state 28
+	typedecl : TYPE LCNAME EQ LBRACE recordellist RBRACE .  (14)
+
+	.  reduce 14
+
+
+state 29
+	variantlist1 : PIPE variant variantlist1 .  (10)
+
+	.  reduce 10
+
+
+state 30
+	typename : LPAREN typename . RPAREN  (2)
+	typename : typename . TIMES typename  (3)
+	typename : typename . ARROW typename  (4)
+
+	RPAREN  shift 34
+	ARROW  shift 31
+	TIMES  shift 32
+	.  error
+
+
+state 31
+	typename : typename ARROW . typename  (4)
+
+	LCNAME  shift 23
+	LPAREN  shift 24
+	.  error
+
+	typename  goto 35
+
+
+state 32
+	typename : typename TIMES . typename  (3)
+
+	LCNAME  shift 23
+	LPAREN  shift 24
+	.  error
+
+	typename  goto 36
+
+
+state 33
+	typename : typename . TIMES typename  (3)
+	typename : typename . ARROW typename  (4)
+	recordel : LCNAME COLON typename .  (5)
+
+	ARROW  shift 31
+	TIMES  shift 32
+	LCNAME  reduce 5
+	RBRACE  reduce 5
+
+
+state 34
+	typename : LPAREN typename RPAREN .  (2)
+
+	.  reduce 2
+
+
+35: shift/reduce conflict (shift 31, reduce 4) on ARROW
+35: shift/reduce conflict (shift 32, reduce 4) on TIMES
+state 35
+	typename : typename . TIMES typename  (3)
+	typename : typename . ARROW typename  (4)
+	typename : typename ARROW typename .  (4)
+
+	ARROW  shift 31
+	TIMES  shift 32
+	LCNAME  reduce 4
+	EOF  reduce 4
+	RPAREN  reduce 4
+	RBRACE  reduce 4
+	TYPE  reduce 4
+	PIPE  reduce 4
+
+
+36: shift/reduce conflict (shift 31, reduce 3) on ARROW
+36: shift/reduce conflict (shift 32, reduce 3) on TIMES
+state 36
+	typename : typename . TIMES typename  (3)
+	typename : typename TIMES typename .  (3)
+	typename : typename . ARROW typename  (4)
+
+	ARROW  shift 31
+	TIMES  shift 32
+	LCNAME  reduce 3
+	EOF  reduce 3
+	RPAREN  reduce 3
+	RBRACE  reduce 3
+	TYPE  reduce 3
+	PIPE  reduce 3
+
+
+State 35 contains 2 shift/reduce conflicts.
+State 36 contains 2 shift/reduce conflicts.
+
+
+18 terminals, 11 nonterminals
+20 grammar rules, 37 states

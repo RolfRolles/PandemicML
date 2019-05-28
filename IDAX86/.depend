@@ -1,0 +1,4 @@
+IDAX86Disasm.cmo:
+IDAX86Disasm.cmx:
+IDAX86Graph.cmo: IDAX86Disasm.cmo
+IDAX86Graph.cmx: IDAX86Disasm.cmx

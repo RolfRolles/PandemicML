@@ -1,0 +1,5 @@
+X86ToIR.cmo: X86ToIRUtil.cmo X86ToIR.cmi
+X86ToIR.cmx: X86ToIRUtil.cmx X86ToIR.cmi
+X86ToIRUtil.cmo:
+X86ToIRUtil.cmx:
+X86ToIR.cmi:

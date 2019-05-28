@@ -1,0 +1,20 @@
+What do I need to make this work?
+
+* Abstract operand x86 sequence => concrete, sandboxed x86 sequence
+
+* Canonicalizer needs to take subregisters into account
+
+* Find and fix the bug involving "negated constants"
+
+* Live variables for the sequence generator.
+
+* I need to modify my JIT compiler/results generator to return me all of the
+  registers, not just a few of them.
+  
+  Ideally, I need to set each register EXCEPT ESP to a random value before the
+  sequence executes, and store the results of all registers after the sequence
+  has executed.
+  
+* Custom hash-table for instruction results with liveness information
+
+* Custom memory <> disk storage

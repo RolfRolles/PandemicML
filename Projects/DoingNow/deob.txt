@@ -1,0 +1,111 @@
+let deobfuscated_handlers = 
+
+What the fuck objects are we dealing with?
+* A sequences of assembly language instructions
+* An optional description of the instruction's obfuscator
+* A list of memory locations accessed by the handler
+
+What the fuck are we doing?
+* PHASE 1:  OFFLINE.  COMPUTE REFERENCE SEMANTICS FOR NON-OBFUSCATED SEQUENCES
+* * Generate N different input hash tables.
+* * For every platonic non-obfuscator-laden handler, collect the I/O pairs under the N inputs.  Compute a hash of the input and output variables.
+* * Store these in a hash table mapping to the handler.
+
+* PHASE 2:  ONLINE.  COMPUTE OBSERVED SEMANTICS AND COMPARE
+* * For every obfuscated handler, collect the I/O pairs under N different evaluations.  Compute a hash of the input and output variables.
+* * If the hash is found in the table, ensure that the associated memory locations form a subset of the handler's memory accesses.
+* * If they match, these facts could be verified.
+
+* PHASE 3:  ONLINE.  IDENTIFY OBFUSCATORS USING ORACLE-GUIDED REFINEMENT
+
+
+--8<------QF_BF IMPLEMENTATION--8<------
+(set-logic QF_BV)
+
+(define-sort bv32   (_ BitVec 32))
+(define-sort optype (_ BitVec 2))
+
+(declare-fun bv32 () EBX)
+(declare-fun bv32 () VAL1)
+(declare-fun bv32 () VAL2)
+(declare-fun bv32 () VAL3)
+(declare-fun bv32 () EBXAFTER)
+
+(declare-fun bv32 () KEY)
+(declare-fun bv32 () CONST1)
+(declare-fun bv32 () CONST2)
+
+(declare-fun bv2 () OP1)
+(declare-fun bv2 () OP2)
+(declare-fun bv2 () OP3)
+(declare-fun bv2 () OP4)
+
+(assert 
+  (not 
+    (or (= OP1 #b11))
+    (or (= OP2 #b11))
+    (or (= OP3 #b11))
+    (or (= OP4 #b11))
+  )
+)
+
+(assert
+  (and
+    (= VAL1 
+       (ite (= OP1 #b00) (bvadd KEY EBX)
+       (ite (= OP1 #b01) (bvxor KEY EBX)
+                         (bvsub KEY EBX))))
+    (= VAL2
+       (ite (= OP2 #b00) (bvadd VAL1 CONST1)
+       (ite (= OP2 #b01) (bvxor VAL1 CONST1)
+                         (bvsub VAL1 CONST1))))
+    (= VAL3
+       (ite (= OP3 #b00) (bvadd VAL2 CONST2)
+       (ite (= OP3 #b01) (bvxor VAL2 CONST2)
+                         (bvsub VAL2 CONST2))))
+    (= EBXAFTER
+       (ite (= OP4 #b00) (bvadd EBX VAL3)
+       (ite (= OP4 #b01) (bvxor EBX VAL3)
+                         (bvsub EBX VAL3))))
+  )
+)
+
+(solver-push)
+
+; EMPIRICAL OBSERVATIONS
+(assert 
+  (and 
+    (=> (and (= KEY [OBSERVED VALUE #1K]) (= EBX [OBSERVED VALUE #1B])) (= EBXAFTER [OBSERVED VALUE #1A]))
+    (=> (and (= KEY [OBSERVED VALUE #2K]) (= EBX [OBSERVED VALUE #2B])) (= EBXAFTER [OBSERVED VALUE #2A]))
+    ; ...
+    (=> (and (= KEY [OBSERVED VALUE #NK]) (= EBX [OBSERVED VALUE #NB])) (= EBXAFTER [OBSERVED VALUE #NA]))
+  )
+)
+
+(check-sat)
+(get-model)
+--8<------QF_BF IMPLEMENTATION--8<------
+
+* PHASE 3 (cont'd).  REFINEMENT LOOP FROM ABOVE.
+/-> * Reify model into data structure description thereof.
+|   * Generate random values for EBX and KEY ([EDI]).
+|   * Generate the "empirical observation":
+|   * * Create a state using the values for EBX and KEY above.  
+|   * * Generate I/O pair.
+|   * Using the reified model, predict output value of and compare with EBXAFTER.
+\-- * If it does not match, assert the new empirical observation, solve again, and loop.
+* * If it does match, it can be verified.
+
+* PHASE 4.  ONLINE.  IDENTIFY HANDLERS WITH OBFUSCATORS.
+* * Generate N input hash tables.
+* * Map each hash table by executing the handler deobfuscator to obtain a value for AL/AX/EAX, given EBX and KEY
+* * Compare these to the empirical observations of the non-obfuscated sequences.
+* * These can be verified.
+
+So this information comprises a map between the handler numbers and (which platonic handler it is,what its obfuscator is).
+
+From here, we can disassemble the bytecode.
+
+Idea for tomorrow:  what's the best way to go about synthesizing the bytecode deobfuscator?
+
+I need to look at the type of transformations that are made.

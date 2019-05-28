@@ -1,0 +1,18 @@
+BVPrettyPrint.cmo: BitVector.cmi BV.cmi
+BVPrettyPrint.cmx: BitVector.cmx BV.cmi
+BVTypeCheck.cmo: BitVector.cmi BVPrettyPrint.cmo BV.cmi
+BVTypeCheck.cmx: BitVector.cmx BVPrettyPrint.cmx BV.cmi
+BitBlast.cmo: PL.cmo BitVector.cmi BVPrettyPrint.cmo BV.cmi
+BitBlast.cmx: PL.cmx BitVector.cmx BVPrettyPrint.cmx BV.cmi
+BitVector.cmo: PL.cmo BitVector.cmi
+BitVector.cmx: PL.cmx BitVector.cmi
+CNF.cmo: PL.cmo
+CNF.cmx: PL.cmx
+PL.cmo:
+PL.cmx:
+PLTVLAI.cmo: PL.cmo
+PLTVLAI.cmx: PL.cmx
+RandPL.cmo: PL.cmo
+RandPL.cmx: PL.cmx
+BV.cmi: BitVector.cmi
+BitVector.cmi: PL.cmo

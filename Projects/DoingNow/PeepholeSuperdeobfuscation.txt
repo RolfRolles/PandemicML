@@ -1,0 +1,201 @@
+(* GREP FIXME *)
+
+(* Get a list of prefixes of `list`, length l to length n, 
+   in order of increasing length *)
+let take_prefixes l n list = 
+  let _ = if not (l < n && n > 0 && l > 0) then invalid_arg "take_prefixes" in
+  let rec take i last out = function
+  | []           -> out
+  | _ when i = n -> out
+  | x::xs -> take (i+1) (x::last) ((x::last)::out) xs
+  in 
+  let rec discard j = function
+  | [] -> []
+  | x::xs when j < l -> discard (j+1) xs
+  | l -> l
+  in
+  discard 1 (List.rev (take 0 [] [] list))
+
+(* Functions for random number generation in memory reads *)
+let zerorng _  = 0l
+let ffrng   _  = 0xFFl
+let prndgen _  = Int32.succ (Random.int32 0xFFl)
+let a_rnd      = Array.init 4096 prndgen
+let arrrnd a32 = a_rnd.(Int32.to_int a32 land 0xfff)
+let l_rng      = [zerorng;ffrng;arrrnd]
+
+(* States in which to evaluate the sequences *)
+let l_cand_ht = let ffrng _ = 0xFFFFFFFFl in let i = NEWIRRandomizedEvaluator.initialize_registers in 
+ [i zerorng;i ffrng;i (fun _ -> 1l);i (fun _ -> Int32.succ (Random.int32 Int32.max_int))]
+
+(* See if two memory hash tables are the same *)
+let compare_mem_ht keep ht1 ht2 = 
+  try (Hashtbl.iter (fun a v -> if keep a && ht_find_opt ht2 a <> Some(v) then raise Not_found) ht1; true)
+  with Not_found -> false
+let compare_mem2 keep ht1 ht2 = compare_mem keep ht1 ht2 && compare_mem keep ht2 ht1
+
+(* Hash table utilities for evaluating predicates over two runs *)
+let get_after_values  ht = List.rev_map (fun (_,va) -> (va,eval ht (IRUtil.mk_evar va)))
+let get_after2_values ht = get_after_values ht X86ToIRUtil.l_p_var_varafter2
+let get_after_values  ht = get_after_values ht X86ToIRUtil.l_p_var_varafter
+
+(* Evaluate a sequence in a given register context with a given rng *)
+let f_candidate h m = (h,m) let f_obfuscated h m = (h,m,get_after2_values h)
+let eval_with_rng ir_ssa ht f rng =
+  let ht,memctx = Hashtbl.copy ht,Hashtbl.create 30 in 
+  let fr,_,fw,_,_ = NEWIRRandomizedEvaluator.mk_mem_funs memctx rng in
+  let _,_ = NEWIREval.stmts ir_ssa ht fr fw in
+  f ir_ssa ht memctx
+  
+(* Generate a list of evaluation results, given a list of input hash tables *)
+let mk_candidate_ht ir_ssa f = 
+  List.fold_left (fun acc ht -> (List.rev_map (eval_with_rng ir_ssa ht f) l_rng)@acc) [] l_cand_ht
+    
+let flags = IRUtil.var_setify (let open X86ToIRUtil in [vZF;vSF;vOF;vAF;vPF;vCF;vDF])
+let regs_ineq,flags_ineq = 
+  let mk_ne v1 v2 = IRUtil.(mk_or acc (mk_ne (mk_evar v1) (mk_evar v2))) in
+  List.fold_left2 
+   (fun (pr,pf) (vb,va1) (_,va2) -> 
+    if IRUtil.VarSet.mem vb flags 
+    then (pr,IRUtil.mk_or pf (mk_ne va1 va2))
+    else (IRUtil.mk_or pr (mk_ne va1 va2),pf))
+   (IRUtil.mk_false,IRUtil.mk_false)
+    X86ToIRUtil.l_p_var_varafter
+    X86ToIRUtil.l_p_var_varafter2
+
+let mem_ineq = IRUtil.false
+
+(* FIXME keep, mem_ineq ARE UNBOUND *)
+(* Given one candidate and an obfuscated sequence, *)
+let eval_obfuscated (cir,l_cand) (oir,l_obfs) =
+  let v = in
+  let rec aux f lo lc = match lc,lo with
+  | [],[] -> let v = NEWVerify.verify (cir@oir) in 
+    if v (IRUtil.mk_and regs_ineq mem_ineq) then Some(v flags_ineq) else None
+  | (cht,cmemctx)::cs,(oht,omemctx,l_val)::os ->
+    List.iter (fun (v,e) -> Hashtbl.replace cht v e) l_val;
+    let keep _ = true in
+    let b = eval_to_int32 cht regs_ineq  = 0l && 
+            compare_mem2 keep cmemctx omemctx in
+    let g = eval_to_int32 cht flags_ineq = 0l in
+    List.iter (fun (v,_) -> Hashtbl.remove  cht v)   l_val; 
+    if b then aux (f && g) os cs else None
+  | _,_ -> failwith "eval_obfuscated:  list lengths differed"
+  in
+  List.filter (aux true l_obfs) l_cand
+  
+(* Automated Reverse Engineering of Peephole Obfuscators via Superoptimization
+
+Project executive summary:  This tool is aimed at generically deobfuscating any protection that obfuscates via template-based local expansion of instructions.  We employ SMT-based superoptimization to infer the template expansion and contraction rules, which are used to deobfuscate the code.  Additionally, we produce two programs automatically:  a deobfuscator for any code protected by that protection, as well an obfuscator to produce code mimicking the obfuscation.  These generated programs do not require SMT solving and are hence very fast, showcasing a little-mentioned benefit of semantics-based methods:  that the expensive work done in theorem-proving can be leveraged to construct very efficient tools that do not rely upon SMT solvers.  We conclude that template-based instruction expansion by itself cannot be considered a "strong" protection against reverse engineering.
+
+Components:  
+1)  Trace gatherer.
+2)  Simplification prover.
+
+Executive summary:  Once traces are collected, use the ROP compiler mechanics to compare the randomized executions of two different sequences of code.  Use the theorem prover to establish that the rewrite is correct with respect to *something*.
+
+Outline:
+A)  Randomly evaluate candidate sequences (CS). (outline continued below)
+B)  Randomly evaluate obfuscated sequences (OS) in the CS contexts.
+C)  Evaluate predicates over the combined hash tables to see if they match.
+D)  If they do match, then use theorem-prover based techniques to prove very simple theorems about IR(CS)@IR(OC):
+* * * (vRegAfter != vRegAfter2) || ... must be unsatisfiable
+* * * Could do the same for flags
+* * * NOT(x in spoiled ESP interval) => MemAfter[x] = MemAfter2[x]
+E)  These are the rewrite rules.
+
+3)  Generalizer for rewrite rules.
+
+Not sure how to do this one just yet.
+
+4)  Facility to use the deobfuscator within the code.
+
+5)  Emitter for deobfuscator and obfuscator.
+*)
+(* Think about this.  What are the merits of using a random array versus using
+   different random values every time? Well, why do I want those values at all?
+   
+   So I can compare the memory hash tables.  Anything not immediately below ESP
+   factors into the comparison.
+   
+   Will there be ill-effects from re-using the same random values for every
+   sequence?
+   
+   I don't know right now.  Fortunately, it's easy enough to swap the function
+   pointer.
+   
+   Well, this could have broader ramifications upon the design, though.  Right
+   now I'm struggling with an issue of design optimization.  If the random
+   numbers are generated differently for each candidate, that means I have to
+   re-evaluate the obfuscated examples for each sample that I want to test
+   against.  So that kind of sucks.  But if I use the swappable random number 
+   generator scheme, that's not an issue.
+*)
+
+(* So what am I actually going to need? 
+1) The set of randomly-generated input states
+2) I/O hash tables for all of those, plus read lists
+3) Initial memory contexts (hash tables) gathered from the read lists
+
+
+
+
+
+* Some of the patterns are going to need to make use of unspecified constants.
+
+* Might be wise to expand the location prediction.
+
+[reg+disp]
+[reg*[2,4,8]+disp]
+[reg+reg*[2,4,8]+disp]
+
+This would be easy enough.
+
+* FS/GS segments will need special handling.
+
+That part is going to kick me in the balls.  This is absolutely correct; my IR translator won't handle this right now.  I can pretend it doesn't exist and work from there, but it's just going to be a prototype.
+
+How to use the ROP compiler codebase in order to do the deobfuscation mechanics:
+
+* Basically, I want to take my "candidate replacement sequences" and randomly evaluate them.
+* For each "obfuscated" sequence, randomly evaluate it starting from the same state(s) as the replacement sequences.
+* Merge the results into one hash table.
+* Now we can evaluate predicates, such as 
+* * Registers:  (vEaxAfter != vEaxAfter2) || ... 
+* * Flags:  (vZFAfter != vZFAfter2) || ...
+* What about memory?
+* * It must read from the same locations.  
+* * * THAT IS NOT TRUE, if the values are within N of the stack pointer.
+* * So ... it must read from the same locations, apart from the stack.
+* * Must it access them the same number of times?
+* * * I can't see why it should.  Consider add [eax+4], X / sub [eax+4], ebx / sub [eax+4], X => sub [eax+4], ebx
+
+*** Is there a cheap test we can do for memory locations? ***
+
+In theory we should be able to bound the writes below ESP and then straight-up compare the hash tables.
+We can make this faster by precomputing a hash of the contents.
+
+When we issue the memory equality postcondition
+* 
+
+
+    
+
+
+
+(, issue an extra constraint saying 
+
+
+let make64 h32 l32 = Int64.(logor (shift_left (of_int h32) 32) (of_int l32))
+let rol13_64 i = Int64.(logor (shift_left i 13) (shift_right_logical i 51))
+
+(* keep:  int32 -> bool, rejects by address
+   hash:  'a -> int32 -> int32 -> 'a, arbitrary
+   post:  'a -> 'b, arbitrary *)
+let hash_mem_ht ht keep hash post = 
+  post (Hashtbl.fold (fun a v h -> if keep a then hash h a v else h) ht 0L)
+
+let comparator_of_ht ht1 keep hash post = 
+  let h = hash_mem_ht ht1 keep hash post in
+ (fun ht2 -> hash_mem_ht ht2 keep hash = h && compare_mem_ht keep ht1 ht2)
+*)

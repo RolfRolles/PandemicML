@@ -1,0 +1,16 @@
+IREvaluate.cmo: IRUtil.cmo IR.cmi
+IREvaluate.cmx: IRUtil.cmx IR.cmi
+IRLocalOpt.cmo: PpIR.cmi IRUtil.cmo IRTypeCheck.cmi IR.cmi IRLocalOpt.cmi
+IRLocalOpt.cmx: PpIR.cmx IRUtil.cmx IRTypeCheck.cmx IR.cmi IRLocalOpt.cmi
+IRSSA.cmo: IRUtil.cmo IRLocalOpt.cmi IR.cmi
+IRSSA.cmx: IRUtil.cmx IRLocalOpt.cmx IR.cmi
+IRTypeCheck.cmo: PpIR.cmi IRUtil.cmo IR.cmi IRTypeCheck.cmi
+IRTypeCheck.cmx: PpIR.cmx IRUtil.cmx IR.cmi IRTypeCheck.cmi
+IRUtil.cmo: IR.cmi
+IRUtil.cmx: IR.cmi
+PpIR.cmo: IR.cmi PpIR.cmi
+PpIR.cmx: IR.cmi PpIR.cmi
+IR.cmi:
+IRLocalOpt.cmi: IR.cmi
+IRTypeCheck.cmi: IR.cmi
+PpIR.cmi: IR.cmi

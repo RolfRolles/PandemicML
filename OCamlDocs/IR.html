@@ -1,0 +1,462 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Z3.html">
+<link rel="next" href="IRLocalOpt.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="IDA" rel="Chapter" href="IDA.html">
+<link title="IDAColor" rel="Chapter" href="IDAColor.html">
+<link title="IDAGUI" rel="Chapter" href="IDAGUI.html">
+<link title="IDAGraph" rel="Chapter" href="IDAGraph.html">
+<link title="IDAHotKey" rel="Chapter" href="IDAHotKey.html">
+<link title="IDATopLoop" rel="Chapter" href="IDATopLoop.html">
+<link title="JITRegion" rel="Chapter" href="JITRegion.html">
+<link title="Z3" rel="Chapter" href="Z3.html">
+<link title="IR" rel="Chapter" href="IR.html">
+<link title="IRLocalOpt" rel="Chapter" href="IRLocalOpt.html">
+<link title="IRTypeCheck" rel="Chapter" href="IRTypeCheck.html">
+<link title="PpIR" rel="Chapter" href="PpIR.html">
+<link title="X86" rel="Chapter" href="X86.html">
+<link title="X86CFG" rel="Chapter" href="X86CFG.html">
+<link title="X86CFGAssembler" rel="Chapter" href="X86CFGAssembler.html">
+<link title="X86Constraints" rel="Chapter" href="X86Constraints.html">
+<link title="X86Decode" rel="Chapter" href="X86Decode.html">
+<link title="X86Disasm" rel="Chapter" href="X86Disasm.html">
+<link title="X86Encode" rel="Chapter" href="X86Encode.html">
+<link title="X86InternalOperand" rel="Chapter" href="X86InternalOperand.html">
+<link title="X86LocalOpt" rel="Chapter" href="X86LocalOpt.html">
+<link title="X86TextualAssembler" rel="Chapter" href="X86TextualAssembler.html">
+<link title="X86TypeCheck" rel="Chapter" href="X86TypeCheck.html">
+<link title="X86Util" rel="Chapter" href="X86Util.html">
+<link title="X86Random" rel="Chapter" href="X86Random.html">
+<link title="X86ToIR" rel="Chapter" href="X86ToIR.html">
+<link title="ASMUtil" rel="Chapter" href="ASMUtil.html">
+<link title="LowLevel-old" rel="Chapter" href="LowLevel-old.html">
+<link title="StringUtil" rel="Chapter" href="StringUtil.html">
+<link title="Util" rel="Chapter" href="Util.html"><title>IR</title>
+</head>
+<body>
+<div class="navbar"><a href="Z3.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="IRLocalOpt.html">Next</a>
+</div>
+<center><h1>Module <a href="type_IR.html">IR</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> IR: <code class="code">sig</code> <a href="IR.html">..</a> <code class="code">end</code></pre>The main IR definition.  So far, it's taken more or less directly from David
+    Brumley's Ph.D. thesis, although big changes are planned soon.<br>
+<hr width="100%">
+<br><code><span id="TYPEcastkind"><span class="keyword">type</span> <code class="type"></code>castkind</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Unsigned</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Cast a smaller value to a larger one with zero-extension.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Signed</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Cast a smaller value to a larger one with sign-extension.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">High</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Cast the high part of a value to a smaller sub-value.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Low</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Cast the high part of a value to a smaller sub-value.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+<div class="info">
+Casts in the IR.<br>
+</div>
+
+<br><code><span id="TYPEtypereg"><span class="keyword">type</span> <code class="type"></code>typereg</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">TypeReg_1</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >1-bit</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">TypeReg_8</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >8-bit</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">TypeReg_16</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >16-bit</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">TypeReg_32</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >32-bit</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">TypeReg_64</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >64-bit</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+<div class="info">
+Sizes of register quantities.  Stupidly-named; it's a transliteration of
+    tau_reg from David Brumley's thesis.  Needs a 128-bit quantity if we 
+    intend to support 64-bit assembly languages; will also need to code an 
+    Int128 module.<br>
+</div>
+
+<br><code><span id="TYPEtypeendian"><span class="keyword">type</span> <code class="type"></code>typeendian</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Little</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Big</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Norm</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Normalized.  Not using this currently; may go in a different direction.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+<div class="info">
+Endianness of a memory.<br>
+</div>
+
+<br><code><span id="TYPEvar"><span class="keyword">type</span> <code class="type"></code>var</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Mem</span> <span class="keyword">of</span> <code class="type">int * <a href="IR.html#TYPEtypeendian">typeendian</a> * <a href="IR.html#TYPEtypereg">typereg</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Identifier, endianness, size of elements.  Is the latter necessary?</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Variable</span> <span class="keyword">of</span> <code class="type">int * <a href="IR.html#TYPEtypereg">typereg</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Identifier, size.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+<div class="info">
+Variable type.<br>
+</div>
+
+<pre><span id="TYPEconst"><span class="keyword">type</span> <code class="type"></code>const</span> = <code class="type">int64 * <a href="IR.html#TYPEtypereg">typereg</a></code> </pre>
+<div class="info">
+A constant is an <code class="code">int64</code> and associated size.<br>
+</div>
+
+<br><code><span id="TYPEbinop"><span class="keyword">type</span> <code class="type"></code>binop</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Add</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Sub</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Mul</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">SDiv</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">UDiv</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">SMod</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">UMod</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Shl</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Shr</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Sar</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">And</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Or</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Xor</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">EQ</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">NE</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">ULT</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">ULE</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">SLT</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">SLE</span></code></td>
+
+</tr></table>
+
+<div class="info">
+Binops in the IR.  Support ROR/ROL directly?<br>
+</div>
+
+<br><code><span id="TYPEunop"><span class="keyword">type</span> <code class="type"></code>unop</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Neg</span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Not</span></code></td>
+
+</tr></table>
+
+<div class="info">
+Unops in the IR.<br>
+</div>
+
+<br><code><span id="TYPEexpr"><span class="keyword">type</span> <code class="type"></code>expr</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Binop</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEexpr">expr</a> * <a href="IR.html#TYPEbinop">binop</a> * <a href="IR.html#TYPEexpr">expr</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Unop</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEunop">unop</a> * <a href="IR.html#TYPEexpr">expr</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Load</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEexpr">expr</a> * <a href="IR.html#TYPEexpr">expr</a> * <a href="IR.html#TYPEtypereg">typereg</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Memory, address, size</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Store</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEexpr">expr</a> * <a href="IR.html#TYPEexpr">expr</a> * <a href="IR.html#TYPEexpr">expr</a> * <a href="IR.html#TYPEtypereg">typereg</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Memory, address, expr to write, size</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Var</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEvar">var</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Let</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEvar">var</a> * <a href="IR.html#TYPEexpr">expr</a> * <a href="IR.html#TYPEexpr">expr</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Let var = expr1 in expr2</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Cast</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEcastkind">castkind</a> * <a href="IR.html#TYPEtypereg">typereg</a> * <a href="IR.html#TYPEexpr">expr</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Cast(<a href="IR.html#TYPEcastkind"><code class="code">IR.castkind</code></a>,size,expr)</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Const</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEconst">const</a></code></code></td>
+
+</tr></table>
+
+
+<br><code><span id="TYPEinstr"><span class="keyword">type</span> <code class="type"></code>instr</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Assign</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEvar">var</a> * <a href="IR.html#TYPEexpr">expr</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >var = expr (no side-effects)</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Jmp</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEexpr">expr</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Jump to an arbitrary location</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">CJmp</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEexpr">expr</a> * <a href="IR.html#TYPEexpr">expr</a> * <a href="IR.html#TYPEexpr">expr</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >if(expr1) then goto expr2 else goto expr3</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Halt</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEexpr">expr</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Die</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Assert</span> <span class="keyword">of</span> <code class="type"><a href="IR.html#TYPEexpr">expr</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Assert an arbitrary logical formula</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Label</span> <span class="keyword">of</span> <code class="type">int32</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Where the instruction originally lived</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Special</span> <span class="keyword">of</span> <code class="type">int</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >From David Brumley's thesis; might go differently</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Comment</span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Comment associated with the instruction; usually its disassembly</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+
+</body></html>

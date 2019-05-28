@@ -1,0 +1,86 @@
+Args:  argument parsing
+DataStructures:  a bunch of crap
+NXcroticism:  open arguments, generate gadget tree, verify the sequences, cache them, prove it works
+
+NaryTree:  N-ary trees for gadgets
+SequenceGenerator:  finds gadgets
+
+IORandomizedEvaluator
+IOPair
+GenerateIOPairs:  Given IR, generate I/O pair information
+
+IOBinop
+IOConstant
+IOCopy
+IOEsp
+IOPreserve
+IORead
+IOWrite
+Candidate:  A data structure to hold candidates, as well as printer functions
+VerifyUtil:  convenience stuff for VCs
+VerifyCandidates:  the business logic for verification of candidates
+SequenceVerifier:  top-level verification function for a sequence
+
+GadgetCache:  some data structure for holding verified gadgets
+CacheVerifiedResults:  Puts verified gadgets into the GadgetCache
+
+Compiler:  Nothing much
+Encodable:  refers to a gadget in an assembled payload
+LightTunnel:  proves it works
+
+IDAInterface:  just something for pretty pictures
+
+     5 FrameworkUtil.ml
+    30 IDAInteraface.ml
+
+   271 DataStructures.ml
+    39 Args.ml
+
+    46 NaryTree.ml
+   140 SequenceGenerator.ml
+
+   190 IRRandomizedEvaluator.ml
+    94 IOPair.ml
+   261 GenerateIOPairs.ml
+
+    44 IOEsp.ml
+    54 IOWrite.ml
+    65 IOConstant.ml
+    78 IOPreserve.ml
+    80 IORead.ml
+   235 IOBinop.ml
+   114 IOCopy.ml
+   235 Candidate.ml
+   545 VerifyCandidates.ml
+    29 VerifyUtil.ml
+   165 SequenceVerifier.ml
+
+   155 CacheVerifiedResults.ml
+   394 GadgetCache.ml
+
+     8 Compiler.ml
+   100 Encodable.ml
+   103 LightTunnel.ml
+
+    99 NXcroticism.ml
+
+
+271+ DataStructures.ml
+190+ IRRandomizedEvaluator.ml
+ 94+ IOPair.ml
+261+ GenerateIOPairs.ml
+ 44+ IOEsp.ml
+ 54+ IOWrite.ml
+ 65+ IOConstant.ml
+ 78+ IOPreserve.ml
+ 80+ IORead.ml
+235+ IOBinop.ml
+114+ IOCopy.ml
+235+ Candidate.ml
+545+ VerifyCandidates.ml
+ 29+ VerifyUtil.ml
+165  SequenceVerifier.ml
+------------------------
+2460
+
+802 for new

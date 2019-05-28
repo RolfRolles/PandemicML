@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="IDAColor.html">
+<link rel="next" href="IDAGraph.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="IDA" rel="Chapter" href="IDA.html">
+<link title="IDAColor" rel="Chapter" href="IDAColor.html">
+<link title="IDAGUI" rel="Chapter" href="IDAGUI.html">
+<link title="IDAGraph" rel="Chapter" href="IDAGraph.html">
+<link title="IDAHotKey" rel="Chapter" href="IDAHotKey.html">
+<link title="IDATopLoop" rel="Chapter" href="IDATopLoop.html">
+<link title="JITRegion" rel="Chapter" href="JITRegion.html">
+<link title="Z3" rel="Chapter" href="Z3.html">
+<link title="IR" rel="Chapter" href="IR.html">
+<link title="IRLocalOpt" rel="Chapter" href="IRLocalOpt.html">
+<link title="IRTypeCheck" rel="Chapter" href="IRTypeCheck.html">
+<link title="PpIR" rel="Chapter" href="PpIR.html">
+<link title="X86" rel="Chapter" href="X86.html">
+<link title="X86CFG" rel="Chapter" href="X86CFG.html">
+<link title="X86CFGAssembler" rel="Chapter" href="X86CFGAssembler.html">
+<link title="X86Constraints" rel="Chapter" href="X86Constraints.html">
+<link title="X86Decode" rel="Chapter" href="X86Decode.html">
+<link title="X86Disasm" rel="Chapter" href="X86Disasm.html">
+<link title="X86Encode" rel="Chapter" href="X86Encode.html">
+<link title="X86InternalOperand" rel="Chapter" href="X86InternalOperand.html">
+<link title="X86LocalOpt" rel="Chapter" href="X86LocalOpt.html">
+<link title="X86TextualAssembler" rel="Chapter" href="X86TextualAssembler.html">
+<link title="X86TypeCheck" rel="Chapter" href="X86TypeCheck.html">
+<link title="X86Util" rel="Chapter" href="X86Util.html">
+<link title="X86Random" rel="Chapter" href="X86Random.html">
+<link title="X86ToIR" rel="Chapter" href="X86ToIR.html">
+<link title="ASMUtil" rel="Chapter" href="ASMUtil.html">
+<link title="LowLevel-old" rel="Chapter" href="LowLevel-old.html">
+<link title="StringUtil" rel="Chapter" href="StringUtil.html">
+<link title="Util" rel="Chapter" href="Util.html"><link title="Types" rel="Section" href="#6_Types">
+<link title="Functions" rel="Section" href="#6_Functions">
+<title>IDAGUI</title>
+</head>
+<body>
+<div class="navbar"><a href="IDAColor.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="IDAGraph.html">Next</a>
+</div>
+<center><h1>Module <a href="type_IDAGUI.html">IDAGUI</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> IDAGUI: <code class="code">sig</code> <a href="IDAGUI.html">..</a> <code class="code">end</code></pre>Interacting with IDA's basic GUI<br>
+<hr width="100%">
+<br>
+<span id="6_Types"><h6>Types</h6></span><br>
+<br><code><span id="TYPEchooser"><span class="keyword">type</span> <code class="type">'a</code> chooser</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>columns&nbsp;: <code class="type">(int * string) array</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>describe&nbsp;: <code class="type">'a -> string list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>elements&nbsp;: <code class="type">'a array</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>del&nbsp;: <code class="type">('a <a href="IDAGUI.html#TYPEchooser">chooser</a> -> int -> int32) option</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>ins&nbsp;: <code class="type">('a <a href="IDAGUI.html#TYPEchooser">chooser</a> -> unit) option</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>edit&nbsp;: <code class="type">('a <a href="IDAGUI.html#TYPEchooser">chooser</a> -> int -> unit) option</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>enter&nbsp;: <code class="type">('a <a href="IDAGUI.html#TYPEchooser">chooser</a> -> int -> unit) option</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>destroy&nbsp;: <code class="type">('a <a href="IDAGUI.html#TYPEchooser">chooser</a> -> unit) option</code>;</code></td>
+
+</tr></table>
+}
+
+
+<br>
+<span id="6_Functions"><h6>Functions</h6></span><br>
+<pre><span id="VALaskfile_c"><span class="keyword">val</span> askfile_c</span> : <code class="type">bool -> string -> string option</code></pre><div class="info">
+Asks the user to specify a filename.  The bool dictates whether the file is
+    for saving; if true, the file doesn't have to exist.  The string becomes the
+    title of the dialog.  The return value might be <code class="code">None</code> if the user cancelled.<br>
+</div>
+<pre><span id="VALchoose2"><span class="keyword">val</span> choose2</span> : <code class="type">'a <a href="IDAGUI.html#TYPEchooser">chooser</a> -> string -> bool -> int</code></pre></body></html>

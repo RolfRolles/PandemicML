@@ -1,0 +1,17 @@
+I experimented with a variety of ways to speed up the generate -> encode -> decode -> compare test cycle.
+
+Since X86Encode.mnem_to_encodings maps a mnemonic to a list, I thought the compiler might be generating
+the list each time.  So, I created static data lists for each mnemonic, and made said function return
+those lists directly, thinking it would share them in pure-functional-goodly manner.  No change in speed.
+
+Since the encodings are stored in a list, maybe iterating over the lists is slow?  I changed the encodings 
+to arrays, and similarly changed the typechecking / random generation code to work over arrays instead of
+lists.  No change in speed.
+
+Maybe, since the encoding function is partial (at this time I'm not supporting control transfer 
+instructions, lea or xlat), this is slowing things down.  I'll try hash-consing.  Seems to make things
+marginally slower.
+
+Various combinations of the above also resulted in no speed gains.
+
+Will build on Linux and use GProf at some point.

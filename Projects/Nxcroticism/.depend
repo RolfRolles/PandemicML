@@ -1,0 +1,108 @@
+Args.cmo: Args.cmi
+Args.cmx: Args.cmi
+CacheVerifiedResults.cmo: VerifyCandidates.cmo GadgetCache.cmo \
+    FrameworkUtil.cmo Encodable.cmo DataStructures.cmo
+CacheVerifiedResults.cmx: VerifyCandidates.cmx GadgetCache.cmx \
+    FrameworkUtil.cmx Encodable.cmx DataStructures.cmx
+Candidate.cmo: IOWrite.cmo IORead.cmo IOPreserve.cmo IOPair.cmo IOCopy.cmo \
+    IOConstant.cmo IOBinop.cmo FrameworkUtil.cmo DataStructures.cmo
+Candidate.cmx: IOWrite.cmx IORead.cmx IOPreserve.cmx IOPair.cmx IOCopy.cmx \
+    IOConstant.cmx IOBinop.cmx FrameworkUtil.cmx DataStructures.cmx
+Compiler.cmo:
+Compiler.cmx:
+DataStructures.cmo: FrameworkUtil.cmo
+DataStructures.cmx: FrameworkUtil.cmx
+Encodable.cmo: FrameworkUtil.cmo
+Encodable.cmx: FrameworkUtil.cmx
+FrameworkUtil.cmo:
+FrameworkUtil.cmx:
+GadgetCache.cmo: FrameworkUtil.cmo Encodable.cmo DataStructures.cmo
+GadgetCache.cmx: FrameworkUtil.cmx Encodable.cmx DataStructures.cmx
+GenerateIOPairs.cmo: IRRandomizedEvaluator.cmo IOPair.cmo FrameworkUtil.cmo \
+    DataStructures.cmo
+GenerateIOPairs.cmx: IRRandomizedEvaluator.cmx IOPair.cmx FrameworkUtil.cmx \
+    DataStructures.cmx
+Generator.cmo:
+Generator.cmx:
+GeneratorDSL.cmo: Generator.cmo
+GeneratorDSL.cmx: Generator.cmx
+IDAInteraface.cmo: NaryTree.cmi
+IDAInteraface.cmx: NaryTree.cmx
+IOBinop.cmo: VerifyUtil.cmo IOPair.cmo FrameworkUtil.cmo DataStructures.cmo
+IOBinop.cmx: VerifyUtil.cmx IOPair.cmx FrameworkUtil.cmx DataStructures.cmx
+IOConstant.cmo: VerifyUtil.cmo IOPair.cmo DataStructures.cmo
+IOConstant.cmx: VerifyUtil.cmx IOPair.cmx DataStructures.cmx
+IOCopy.cmo: VerifyUtil.cmo IOPair.cmo FrameworkUtil.cmo DataStructures.cmo
+IOCopy.cmx: VerifyUtil.cmx IOPair.cmx FrameworkUtil.cmx DataStructures.cmx
+IOEsp.cmo: VerifyUtil.cmo IOPair.cmo DataStructures.cmo
+IOEsp.cmx: VerifyUtil.cmx IOPair.cmx DataStructures.cmx
+IOPair.cmo: FrameworkUtil.cmo DataStructures.cmo
+IOPair.cmx: FrameworkUtil.cmx DataStructures.cmx
+IOPreserve.cmo: VerifyUtil.cmo IOPair.cmo DataStructures.cmo
+IOPreserve.cmx: VerifyUtil.cmx IOPair.cmx DataStructures.cmx
+IORead.cmo: VerifyUtil.cmo IOPair.cmo DataStructures.cmo
+IORead.cmx: VerifyUtil.cmx IOPair.cmx DataStructures.cmx
+IOWrite.cmo: VerifyUtil.cmo IOPair.cmo DataStructures.cmo
+IOWrite.cmx: VerifyUtil.cmx IOPair.cmx DataStructures.cmx
+IRRandomizedEvaluator.cmo: DataStructures.cmo
+IRRandomizedEvaluator.cmx: DataStructures.cmx
+LightTunnel.cmo: GadgetCache.cmo FrameworkUtil.cmo Encodable.cmo
+LightTunnel.cmx: GadgetCache.cmx FrameworkUtil.cmx Encodable.cmx
+NEWGadget.cmo:
+NEWGadget.cmx:
+NEWGadgetGenerator.cmo: NEWIREval.cmo NEWIOStruct.cmo NEWGadget.cmo \
+    GeneratorDSL.cmo Generator.cmo
+NEWGadgetGenerator.cmx: NEWIREval.cmx NEWIOStruct.cmx NEWGadget.cmx \
+    GeneratorDSL.cmx Generator.cmx
+NEWIOStruct.cmo: NEWX86IRRandomizedEvaluator.cmo NEWIRRandomizedEvaluator.cmo \
+    NEWIREval.cmo NEWGadget.cmo
+NEWIOStruct.cmx: NEWX86IRRandomizedEvaluator.cmx NEWIRRandomizedEvaluator.cmx \
+    NEWIREval.cmx NEWGadget.cmx
+NEWIREval.cmo: NEWIREvalUtil.cmo
+NEWIREval.cmx: NEWIREvalUtil.cmx
+NEWIREvalUtil.cmo:
+NEWIREvalUtil.cmx:
+NEWIRRandomizedEvaluator.cmo: NEWIREval.cmo
+NEWIRRandomizedEvaluator.cmx: NEWIREval.cmx
+NEWMemloc.cmo: NEWIREval.cmo NEWIOStruct.cmo
+NEWMemloc.cmx: NEWIREval.cmx NEWIOStruct.cmx
+NEWSmallerROPC.cmo: NEWVerify.cmo NEWSyntacticReject.cmo NEWMemloc.cmo \
+    NEWIREval.cmo NEWIOStruct.cmo NEWGadgetGenerator.cmo NEWGadget.cmo \
+    Generator.cmo
+NEWSmallerROPC.cmx: NEWVerify.cmx NEWSyntacticReject.cmx NEWMemloc.cmx \
+    NEWIREval.cmx NEWIOStruct.cmx NEWGadgetGenerator.cmx NEWGadget.cmx \
+    Generator.cmx
+NEWSyntacticReject.cmo:
+NEWSyntacticReject.cmx:
+NEWVerify.cmo:
+NEWVerify.cmx:
+NEWX86IRRandomizedEvaluator.cmo:
+NEWX86IRRandomizedEvaluator.cmx:
+NXcroticism.cmo: VerifyCandidates.cmo SequenceVerifier.cmo \
+    SequenceGenerator.cmo NaryTree.cmi LightTunnel.cmo GadgetCache.cmo \
+    FrameworkUtil.cmo CacheVerifiedResults.cmo
+NXcroticism.cmx: VerifyCandidates.cmx SequenceVerifier.cmx \
+    SequenceGenerator.cmx NaryTree.cmx LightTunnel.cmx GadgetCache.cmx \
+    FrameworkUtil.cmx CacheVerifiedResults.cmx
+NaryTree.cmo: NaryTree.cmi
+NaryTree.cmx: NaryTree.cmi
+Peep.cmo: NEWX86IRRandomizedEvaluator.cmo NEWVerify.cmo \
+    NEWIRRandomizedEvaluator.cmo NEWIREval.cmo
+Peep.cmx: NEWX86IRRandomizedEvaluator.cmx NEWVerify.cmx \
+    NEWIRRandomizedEvaluator.cmx NEWIREval.cmx
+SequenceGenerator.cmo: NaryTree.cmi
+SequenceGenerator.cmx: NaryTree.cmx
+SequenceVerifier.cmo: VerifyCandidates.cmo IOPair.cmo IOEsp.cmo \
+    GenerateIOPairs.cmo FrameworkUtil.cmo DataStructures.cmo Candidate.cmo
+SequenceVerifier.cmx: VerifyCandidates.cmx IOPair.cmx IOEsp.cmx \
+    GenerateIOPairs.cmx FrameworkUtil.cmx DataStructures.cmx Candidate.cmx
+VerifyCandidates.cmo: VerifyUtil.cmo IOWrite.cmo IORead.cmo IOPreserve.cmo \
+    IOCopy.cmo IOConstant.cmo IOBinop.cmo FrameworkUtil.cmo \
+    DataStructures.cmo Candidate.cmo
+VerifyCandidates.cmx: VerifyUtil.cmx IOWrite.cmx IORead.cmx IOPreserve.cmx \
+    IOCopy.cmx IOConstant.cmx IOBinop.cmx FrameworkUtil.cmx \
+    DataStructures.cmx Candidate.cmx
+VerifyUtil.cmo:
+VerifyUtil.cmx:
+Args.cmi:
+NaryTree.cmi:

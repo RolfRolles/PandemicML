@@ -1,0 +1,57 @@
+Generalization process
+
+1) Initial fact discovered (IMM32 is fixed)
+push ecx       ===> 
+mov ecx, IMM32 ===> 
+add ebx, ecx   ===> add ebx, IMM32
+pop ecx        ===> 
+
+2) Discovered by generalizing ebx
+push ecx       ===> 
+mov ecx, IMM32 ===> 
+add x, ecx     ===> add x, IMM32
+pop ecx        ===> 
+WHEN: x != ESP, x != ECX
+
+3) Discovered by generalizing ecx
+push y         ===> 
+mov y, IMM32   ===> 
+add x, y       ===> add x, IMM32
+pop y          ===> 
+when: x != ESP, y != ESP, x != y
+
+4) Discovered by generalizing IMM32 ((IMM32) is variable)
+push y         ===> 
+mov y, (IMM32) ===> 
+add x, y       ===> add x, (IMM32)
+pop y          ===> 
+when: x != ESP, y != ESP, x != y
+
+5) Discovered by generalizing add
+push y         ===> 
+mov y, (IMM32) ===> 
+m x, y         ===> m x, (IMM32)
+pop y          ===> 
+when: x != ESP, y != ESP, x != y, m in [mov;add;sub;xor;and;or;test;cmp]
+
+So how is that going to work?
+
+At present, I have the machinery to discover the register generalizations.
+So let's say I have discovered that...
+
+Hmm, this idea is feeling natural.
+Make a new variant type for describing x86, which includes "abstract" members.
+So a substitution is this:
+
+(input abstract instruction sequence,constraints,output abstract instruction sequence)
+
+After proving the first fact about a substitution, everything is concrete.
+The generalization step subsequently tries to replace each register and constant.
+It might add constraints.
+Subsequent generalizations may also generalize the constraints.
+
+In retrospect, I think I understand why my generalization code was not working:
+probably for the same reason that the "straight-up substitute" code was not,
+because the variable substitution code did not handle the LHS of assignments.
+If I put that back, I think I could easily generalize multiple registers at the
+same time.

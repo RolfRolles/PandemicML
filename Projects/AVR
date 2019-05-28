@@ -1,0 +1,133 @@
+type int3   = int
+type int6   = int
+type int8   = int
+type addr16 = int
+
+type avrreg = 
+|
+
+type avrsflag = 
+| AVR_I
+| AVR_T
+| AVR_H
+| AVR_S
+| AVR_V
+| AVR_N
+| AVR_Z
+| AVR_C
+
+let avrsflag_of_int = function
+| 7 -> AVR_I
+| 6 -> AVR_T
+| 5 -> AVR_H
+| 4 -> AVR_S
+| 3 -> AVR_V
+| 2 -> AVR_N
+| 1 -> AVR_Z
+| 0 -> AVR_C
+| n -> failwith("avrsflag_of_int: "^(string_of_int n))
+
+
+
+
+type avr_insn = 
+| Adc of avrreg * avrreg (* Add with carry *)
+| Add of avrreg * avrreg (* Add *)
+| Adiw of (avrreg * avrreg) * int6 (* Add immediate word *)
+| And of avrreg * avrreg (* And *)
+| Andi of avrreg * int8  (* And immediate *)
+| Asr of avrreg          (* Arithmetic shift right by 1 *)
+| Bclr of avrsflag       (* Bit clear *)
+| Bld of avrreg * int3   (* Bit load from T flag *)
+| Brbc of avrsflag * addr16 (* PSEUDO: Branch if bit clear *)
+| Brbs of avrsflag * addr16 (* PSEUDO: Branch if bit set *)
+| Brcc of addr16 (* Branch if carry clear *)
+| Brcs of addr16 (* Branch if carry set *)
+| Break
+| Breq of addr16 (* Branch if equal *)
+| Brge of addr16 (* Branch if greater-equals *)
+| Brhc of addr16 (* Branch if half-carry clear *)
+| Brhs of addr16 (* Branch if half-carry set *)
+| Brid of addr16 (* Branch if interrupt disabled *)
+| Brie of addr16 (* Branch if interrupt enabled *)
+| Brlo of addr16 (* Branch if unsigned lower *)
+| Brlt of addr16 (* Branch if signed less than *)
+| Brmi of addr16 (* Branch if minus *)
+| Brne of addr16 (* Branch if not equal *)
+| Brpl of addr16 (* Branch if plus *)
+| Brsh of addr16 (* Branch if unsigned same or higher *)
+| Brtc of addr16 (* Branch if T flag clear *)
+| Brts of addr16 (* Branch if T flag set *)
+| Brvc of addr16 (* Branch if overflow flag clear *)
+| Brvs of addr16 (* Branch if overflow flag set *)
+| Bset of avrsflag (* Bit set *)
+| Bst  of avrreg * int3   (* Bit store to T flag *)
+| Call of addr16 (* Call *)
+| Cbi  of avrioreg * int3 (* Clear bit in I/O register *)
+| Cbr  of avrreg * int8   (* Clear bits in register *)
+
+
+type irexpr = 
+| 
+
+
+type irstmt = 
+| Assign of irvar * irexpr
+| 
+
+let 
+
+
+ADC   Rd, Rr 0001 11 rd dddd rrrr
+ADD   Rd, Rr 0000 11 rd dddd rrrr
+ADIW  Wd, K  1001 00 10 KKdd KKKK
+AND   Rd, Rr 0010 00 rd dddd rrrr
+ANDI  Rd, K  0111 KK KK dddd KKKK ; IDENTICAL TO CBR
+ASR   Rd     1001 01 0d dddd 0101
+BCLR  s      1001 01 00 1sss 1000
+BLD   Rd, b  1111 10 0d dddd 0bbb
+BRBC  s,  K  1111 01 kk kkkk ksss ; THIS IS THE GENESIS OF ALL BRANCH INSNS
+BRBS  s,  K  1111 00 kk kkkk ksss ; THIS IS THE GENESIS OF ALL BRANCH INSNS
+BRCC  K      1111 01 kk kkkk k000 ; IDENTICAL TO BRSH
+BRCS  K      1111 00 kk kkkk k000 ; IDENTICAL TO BRLO
+BREAK        1001 01 01 1001 1000
+BREQ  K      1111 00 kk kkkk k001
+BRGE  K      1111 01 kk kkkk k100
+BRHC  K      1111 01 kk kkkk k101
+BRHS  K      1111 00 kk kkkk k101
+BRID  K      1111 01 kk kkkk k111
+BRIE  K      1111 01 kk kkkk k111
+BRLO  K      1111 00 kk kkkk k000 ; IDENTICAL TO BRCS
+BRLT  K      1111 00 kk kkkk k100
+BRMI  K      1111 00 kk kkkk k010
+BRNE  K      1111 01 kk kkkk k001
+BRPL  K      1111 01 kk kkkk k010 
+BRSH  K      1111 01 kk kkkk k000 ; IDENTICAL TO BRCC
+BRTC  K      1111 01 kk kkkk k110
+BRTS  K      1111 00 kk kkkk k110
+BRVC  K      1111 01 kk kkkk k011
+BRTS  K      1111 00 kk kkkk k011
+BSET  K      1001 01 00 0sss 1000
+BST   K      1111 10 1d dddd 0bbb
+CALL  K      1001 01 0k kkkk 111k kkkk kkkk kkkk kkkk
+CBI   A, b   1001 10 00 AAAA Abbb
+CBR   Rd, K  0111 KK KK dddd KKKK ; IDENTICAL TO ANDI
+CLC          1001 01 00 1000 1000
+CLH          1001 01 00 1101 1000
+CLI          1001 01 00 1111 1000
+CLN          1001 01 00 1010 1000
+CLR Rd       0010 01 dd dddd dddd ; IDENTICAL TO EOR Rd, Rd
+CLS          1001 01 00 1100 1000
+CLT          1001 01 00 1110 1000
+CLV          1001 01 00 1011 1000
+CLZ          1001 01 00 1001 1000
+COM  Rd      1001 01 0d dddd 0000 
+CP   Rd, Rr  0001 01 rd dddd rrrr 
+CPC  Rd, Rr  0000 01 rd dddd rrrr
+CPI  Rd, K   0011 KK KK dddd KKKK
+CPSE Rd, Rr  0001 00 rd dddd rrrr
+DEC  Rd      1001 01 0d dddd 1010
+DES          1001 01 00 KKKK 1011
+EICALL       1001 01 01 0001 1001
+EIJMP        1001 01 00 0001 1001
+ELPM 

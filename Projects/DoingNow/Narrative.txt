@@ -1,0 +1,76 @@
+Q: What am I doing?
+A: Rewriting the ROP compiler to make it very small.
+
+Q: Why am I doing that?
+A: Because the existing one is huge, even in OCaml:  3600 lines.  This is too big to teach.
+
+Q: Okay, so how am I doing that?
+A: Exploiting an observation I had about designing stuff like this while doing the IR translator synthesis stuff.  The ROP compiler can employ basically the same paradigm as the generator stuff to make the code a lot shorter.  Potentially a LOT shorter.
+
+Q: Uh-huh.  And which insights are those?
+A: Fundamentally the IR translator synthesizer and the ROP compiler employ a very similar mechanism at their core.  Both involve collecting input/output pairs, then testing to see whether all of them satisfy certain properties.  Whereas those properties were previously generated manually for each gadget type (using custom code and data structures, sometimes very verbose), the observation is that we can pose these properties as expressions within the IR, and then just evaluate them to see whether they are true.  What are these expressions?  The same ones that we generate for the verification stage!  In the process of simplifying, we factor everything into a common harness and eliminate the custom data types.
+
+Q: Okay, that could work.  What does the compiler look like under this new architecture?
+A: 
+
+1.  Generate sequences from a PE binary (as usual).
+2.  Generate I/O pairs as usual, but use the new SSA mechanism to dump everything into one hash table instead of six.
+3.  Convert the addresses into memory locations.  This is done except for the output interface.
+* I probably want to 
+4.  I guess this is were the replacement to all the candidate generation and verification goes.
+
+Q: Okay, it sounds like you're off to a pretty good start.  So what's keeping you?
+A: I suppose I'm still scratching my head a bit over how to implement the memory-based gadget verification stuff.  How would I implement the Write gadget generator?
+
+* mk_pair_generator (written locations) (input registers)
+* What's the filtration condition?  Size of variable == size of write
+
+What should I generate?
+
+// Assign(vMemLocVariable,Load(vMemAfter,Binop(vBase,Add,iDisp32),sizeof(vMemLocVariable)))
+vMemLocVariable != vReg
+
+That's for the candidate generation, however.  For the verification condition, we also need a memory index distinction assertion.
+
+Okay, so that starts to clear up the question of what other information we need to produce while making the memory locations:
+* A list of read/write variables, plus their associated memory locations and sizes
+
+This can later be mapped into a list of assignment statements as shown previously.  And fortunately, those variables are already in the hash tables, so this can all be done seamlessly.  I just need to add the assignment assertions and distinction criteria before verification.
+
+Great!
+
+Next steps:
+
+Modify the memory location generator to return lists of (v,m,s) for read/write.  DONE.
+
+Write the Write generator.
+
+Okay, doing that has exposed a wrinkle.  For example, for Write(m,v), we will need to:
+Hashtbl.find rht (m,IRUtil.size_of_var var)
+
+So keep the hash tables too
+
+Could make the memloc include a size, then we could just look them up directly in the hash tables.  No, I don't like this very much.
+
+IDEA: Tie the gadget generators directly to predicate_of_gadget and the evaluation functionality.  DONE
+
+Q: Okay, that was quite a tangent.  Where am I right now?
+A: I'm putting the finishing touches on the memory-related gadget generators.
+
+Q: Gee willickers, Rolf.  What the hell was that all about?
+A: It took a whole day to debug the generator stuff.  Ultimately the issues were kind of subtle.  I needed to be able to call the generators without disturbing the existing state.  I.e., for a pair generator, we only increment the second one after the first one has lapsed.  Ironing out all of the peculiarities took a while.  I became paranoid about modifying the state at all during the "non-modification" calls, but this turned out to be necessary to ensure internal consistency and correctness.  But on the plus side, it is all tested as working.
+
+Q: Okay, so what next?
+A: Next I need to refactor IRRandomizedEvaluator.  I need to be able to call the evaluator on expressions rather than statements.  I don't think this is going to be "difficult" per se, but there will be a bit of cleanup work surrounding the memory expression stuff, and there might be some amateur heroics involved in bridging the expression and statement evaluators together once separated.  2/18/2014 7:24:32 PM to 2/18/2014 8:12:11 PM
+
+Q: Okay, so what next?
+A: Now I want to watch it work.  Specifically, I want to feed it an IR sequence and check what properties it has.  It should be easy enough to do that.
+
+Q: Okay, where are we now and what do we do next?
+A: After spending the evening intellectually masturbating over using lazy evaluation or streams for the generators (and instead discovering the camlp4 syntax extension), I decided that there really is no need to replace this component.  Therefore the evening was more or less wasted.
+
+As for where we are, the candidate generation all works.  Things that still need to be done:
+* Guessing of return location:  I have the e_jt variable; I should be able to evaluate this in all of the hash tables, select the corresponding dword read, and ensure that it's the same on all samples.  DONE.
+* Guessing of frame size:  should be easy.  Generate it from the first hash table, then empirically validate against all other hash tables.  DONE.
+* Verificaton:  for this I need to port the "business logic" over to this framework.  One of the main things will be the ancillary memory verification condition.
+

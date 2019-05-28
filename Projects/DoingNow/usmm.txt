@@ -1,0 +1,24 @@
+Un-SmartMetamorph Generator
+Cooler name:  to be determined.
+
+Executive summary of planned solution:
+
+1)  Input: a collection of straight-line code sequences in binary form
+2)  Process the sequences and extract repeatedly-occuring patterns
+*   Should we generalize at this point, or wait?
+3)  Generate functional fingerprints
+4)  Compare fingerprints against reference sequences
+5)  Prove equivalence using a theorem prover
+
+Several thorns that are sticking out right off the bat:
+
+How do we deal with "generalizations"?
+
+add eax, 1234h
+add eax, ebx
+sub eax, 1234h
+
+In this case, our system would ideally determine several facts:
+
+a)  The sequence has equivalent register semantics to add eax, ebx
+b)  

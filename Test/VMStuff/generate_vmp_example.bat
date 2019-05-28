@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\VMProtect Ultimate\vmprotect_con.exe" \paframework\test\VMStuff\blob.exe.vmp

@@ -1,0 +1,2 @@
+Replace all callbacks with their _exn versions
+Be judicious about where OCaml objects get passed into C++ code; use register_root

@@ -1,0 +1,30 @@
+let munchExpr = function
+| LoadMem(addr,size) -> 
+| BinOp(le,bo,re) -> 
+| Const(i32,size) ->
+
+let munchStmt = function
+| StoreMem(addr,value,Byte) ->
+  Obtain all StoreMem gadgets 
+  For every register that can be used as the address
+  Obtain every sequence that can load a constant into that register
+  For every register that can be used as the value
+  Obtain every sequence that can load a constant into that register
+  Generate a list that looks like this:
+  
+  [
+    [load address reg sequence #1.1; load value reg sequence #1.1.1; store memory gadget #1]
+    [load address reg sequence #1.1; load value reg sequence #1.1.2; store memory gadget #1]
+    [load address reg sequence #1.1; load value reg sequence #1.1.3; store memory gadget #1]
+    [ ... ]
+    [load address reg sequence #1.1; load value reg sequence #1.1.N1;store memory gadget #1]
+
+    [load address reg sequence #1.2; load value reg sequence #1.2.1; store memory gadget #1]
+    [ ... ]
+    [load address reg sequence #1.2; load value reg sequence #1.2.N1;store memory gadget #1]
+
+    [ ... ]
+
+    [load address reg sequence #1.M1;load value reg sequence #1.M1.1; store memory gadget #1]
+    [ ... ]
+    [load address reg sequence #1.M1;load value reg sequence #1.M1.N1;store memory gadget #1]

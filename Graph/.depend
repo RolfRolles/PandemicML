@@ -1,0 +1,6 @@
+CFG.cmo: CFG.cmi
+CFG.cmx: CFG.cmi
+CFGBuild.cmo: CFG.cmi CFGBuild.cmi
+CFGBuild.cmx: CFG.cmx CFGBuild.cmi
+CFG.cmi:
+CFGBuild.cmi: CFG.cmi

@@ -1,0 +1,33 @@
+(** Decision procedure integration:  Performs symbolic execution using Z3 over 
+    a given list of IR instructions, and given an arbitrary postcondition. *)
+
+val z3ast_of_irexpr  : Z3.context -> IR.expr -> Z3.ast
+val instr_to_z3      : Z3.context -> IR.instr -> unit
+
+(** Given a list of instructions, turn it into SSA form, asserting each 
+    instruction as the assertion of a constraint.  So far, this does not 
+    handle anything other than assignment statements (i.e. computed gotos 
+    and conditional jumps as unsupported).  The second argument is a 
+    postcondition which is asserted as being true; the variables in the
+    postcondition are updated to match their post-SSA-translation 
+    counterparts before being asserted. 
+    
+    To do:  saner and hopefully decision-procedure-generic extraction of the
+    components of the countermodel, particularly arrays. *)
+val symbolic_execute : Z3.context -> IR.instr list -> IR.expr -> string
+
+val store_byte_at : (int32 -> int32) -> int32 -> int32 -> int32 -> int32
+val store_word_at : (int32 -> int32) -> int32 -> int32 -> int32 -> int32
+val store_dword_at : (int32 -> int32) -> int32 -> int32 -> int32 -> int32
+
+val assert_byte_at : Z3.context -> Z3.ast -> int32 -> int32 -> unit
+val assert_word_at : Z3.context -> Z3.ast -> int32 -> int32 -> unit
+val assert_dword_at : Z3.context -> Z3.ast -> int32 -> int32 -> unit
+
+val assert_and_store_byte_at  : (int32 -> int32) -> Z3.context -> Z3.ast -> int32 -> int32 -> int32 -> int32
+val assert_and_store_word_at  : (int32 -> int32) -> Z3.context -> Z3.ast -> int32 -> int32 -> int32 -> int32
+val assert_and_store_dword_at : (int32 -> int32) -> Z3.context -> Z3.ast -> int32 -> int32 -> int32 -> int32
+
+val store_string_at  : (int32 -> int32) -> int32 -> string -> int32 -> int32
+val assert_string_at : Z3.context -> Z3.ast -> int32 -> string -> unit
+val assert_and_store_string_at : (int32 -> int32) -> Z3.context -> Z3.ast -> int32 -> string -> int32 -> int32

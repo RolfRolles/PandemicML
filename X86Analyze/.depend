@@ -1,0 +1,12 @@
+X86AnalyzeDefUse.cmo: X86AnalyzeDefUse.cmi
+X86AnalyzeDefUse.cmx: X86AnalyzeDefUse.cmi
+X86GlobalOpt.cmo: X86LocalConstant.cmo X86AnalyzeDefUse.cmi
+X86GlobalOpt.cmx: X86LocalConstant.cmx X86AnalyzeDefUse.cmx
+X86LocalConstant.cmo: X86AnalyzeDefUse.cmi
+X86LocalConstant.cmx: X86AnalyzeDefUse.cmx
+X86LocalOpt2.cmo:
+X86LocalOpt2.cmx:
+X86Stack.cmo: X86Stack.cmi
+X86Stack.cmx: X86Stack.cmi
+X86AnalyzeDefUse.cmi:
+X86Stack.cmi:

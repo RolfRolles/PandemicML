@@ -1,0 +1,1 @@
+IDAHotKey.register "CTRL-F11" (fun () -> IDA.msg "Blah\n");;

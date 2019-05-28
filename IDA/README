@@ -1,0 +1,77 @@
+To begin with, I ask for everyone's patience, as this is my first "proper" 
+open-source release.
+
+This is IDAOCaml v0.1, an OCaml interpreter that runs inside of IDA.  It is first
+and foremost a *research platform*, meaning that there is strictly speaking no
+support, and it supports only the minimal amount of functionality needed to build
+a program analysis platform.  It is distributed under the Q Public License (QPL),
+the same license as OCaml itself (except that OCaml has a linking exemption).
+
+I wanted an OCaml interpreter for the inside of IDA, the way there are Python, 
+Ruby, Java, Javascript, etc. interpreters, so that I could use IDA as an 
+interactive development environment while I built a program analysis framework.  
+IDAOCaml was a success for this goal.  However, one of the goals of the framework 
+was to not rely upon IDA for anything essential, such that whatever tools I 
+developed would work outside of IDA seamlessly.  Therefore, I did not want 
+access to much of IDA's functionality, lest I be tempted to make unportable tools,
+and that is why there is minimal integration with IDA's SDK.  Other people are 
+free to investigate the use of SWIG, etc. to automate wrapping of other SDK 
+functionality if they so choose.
+
+The plugin currently supports:
+
+- Basic interaction with the database and user interface:
+- - Displaying arbitrary graphs, including coloring for the vertex text
+- - Getting and setting of comments
+- - Getting and setting of the screen EA
+- - msg() and warning()
+- - Getting of bytes, words, and dwords
+- - Finding the beginning of functions
+- - Dynamic adding and removing of hotkeys (limited support due to what seems to be bugs in IDA)
+- - Unfinished tracing support
+
+DEPENDENCIES:
+
+ocaml-3.12.0 (source distribution)
+cygwin (needed for building OCaml, as per OCaml's README.win32)
+The Microsoft Visual C++ toolchain for building OCaml and IDAOCaml
+flexdll:  http://alain.frisch.fr/flexdll.html
+IDA v5.6 for Windows plus its SDK (commercial) (other versions and platforms 
+untested):  http://hex-rays.com/idapro/
+
+Steps to building IDAOCaml:
+
+1)  Obtain ocaml-3.12.0 and build it from source under cygwin using the MSVC 
+toolchain.  This process is described in README.win32 that comes with the 
+distribution.  At the time of writing, there is no such prebuilt distribution 
+available from the OCaml maintainers.  Nevertheless, if such a distribution 
+becomes available, it will not be suitable to build the plugin.  The plugin 
+relies upon certain libraries from OCaml that are not included with the binary 
+distributions, and are only available as byproducts of the compilation process.
+
+2)  Edit Config.paths in the directory in which you installed IDAOCaml to reflect
+your IDA SDK directory as well as the directory into which the OCaml 3.12.0 source 
+is installed.
+
+3)  Build with "make all".
+
+4)  If successful, idaocaml.plw will be created in the directory with the source
+files.  This plugin can then be copied to your IDA plugins directory.
+
+Currently, I build IDAOCaml on Windows with IDA 5.6 (the native GUI, not the 
+QT-based one).  I have not investigated building under any other configurations,
+including later or earlier versions of IDA, the QT versions, or upon other 
+platforms.  I will do my best to help people get the plugin building upon other
+systems, but I will not provide "support" in any grand sense.
+
+PORTING ISSUES
+
+There is a single file that relies upon Windows functionality:  IDAGraphViewer.cpp.
+This file mimics the ugraph plugin sample that comes with the IDA SDK prior to 6.x,
+which also relies upon windows.h for HWND.  Comparing ugraph.cpp from the 5.x and 
+6.0 SDKs, it looks like a simple matter to port to other platforms.
+
+GENERAL COMMENTS
+
+The code could be cleaner, and I will most likely refactor it and make it more 
+sensible in a future release.  However, my priority is that the platform works.

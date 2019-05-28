@@ -1,0 +1,69 @@
+* Doesn't do some instructions:
+* * UnimplementedInstr("xlat/xlatb"); (* Look up xlat later *)
+* * Doesn't do FPU
+
+  UnimplementedInstr("fpu d8"); (* Look up FPU stuff later *)
+  UnimplementedInstr("fpu d9");
+  UnimplementedInstr("fpu da");
+  UnimplementedInstr("fpu db");
+  UnimplementedInstr("fpu dc");
+  UnimplementedInstr("fpu dd");
+  UnimplementedInstr("fpu de");
+  UnimplementedInstr("fpu df");
+
+(* To do: replace all the Invalid entries that correspond to prefixes, etc with a new "Fatal" variant *)
+
+  UnimplementedInstr("iret/d/q"); (* Look up iret/d/q later *)
+  UnimplementedInstr("Group 6"); (* 0x100 *)
+  UnimplementedInstr("Group 7");
+
+* * Three-byte SSE opcodes are all stubbed, not reified
+* * Typo:  change AP16 and AP32 to Ap16 and Ap32
+
+* * Groups #9, 12-15:  Stubbed, not reified
+* * Most two-byte SSE opcodes are unimplemented
+* oMp might be incorrect (backwards?) and needs rewritten anyway 
+  (undefined order of operations)
+
+* Doesn't take LOCK prefix into account
+
+* Add a "Scale" variant to the memexpr type
+
+* Doesn't do segmentation yet:
+* * ModR/M
+* * * Need to look up the rules, again, for "default segments".
+* * * See Intel Manual 1, Section 3.7.4
+* * Raw offsets (Ob,Ow,Od)
+
+* Associate a size with an Ex, to describe the addressing mode?
+* * Strictly speaking, this is unncessary - we could write a little function
+    that would analyze a Memexpr and return its size based on the sizes of 
+    the registers
+* * Actually, my counter-argument here is false.  If the mod/rm specifies an
+    offset directly, and the offset is less than 0x10000, then we can't
+    reliably distinguish between 16- and 32-bit encodings.
+
+* Doesn't return prefixes
+* * Only "needs" to return REP/REPNE/LOCK; segments, opsize, and addrsize
+    decorate the operands.
+
+* Lods, scas, and stos instructions don't have al/ax/eax as explicit operands,
+  but my current formulation marks them as such.
+
+* String instructions are predicated upon both address size and operand size;
+  this needs to be addressed in the oXv and oYv operand constructors.
+
+X86Decode.ml:  decr_ea () needs to decrease len_of_curr_instr as well.
+
+let consume_byte () = 
+  if !len_of_curr_instr > !max_instr_len
+  then raise TooLongInstruction;
+  incr len_of_curr_instr; 
+  let x = !get_byte !current_ea in incr_ea (); x
+
+let decr_ea () = current_ea := Int32.pred !current_ea
+
+    | _ -> decr_ea (); None
+
+X86Encode.ml:
+* * Need to support for "Native16" and -32 encodings: this is easy though (compare operating mode to -N)

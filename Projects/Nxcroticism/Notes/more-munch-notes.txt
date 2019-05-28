@@ -1,0 +1,206 @@
+Executive description of problem:  normal code-generation techniques in 
+compilers make assumptions about the available instruction set that cannot be 
+made in the context of ROP compilation, due to the varying instruction set which 
+might be limited in arbitrary ways and in fact incapable of compiling a given 
+program.
+
+Idea proposed in Q:  
+
+* Use "every munch" instead of maximal munch to build every conceivable gadget
+combination that would accomplish a particular computation.
+
+* Learn whether each subtree is satisfiable, and iteratively try to satisfy
+larger and larger subtrees.
+
+The details of this phase are somewhat unclear to me.  It seems that the main
+ideas involve building an actual labeled tree, where the vertices are every 
+possible concrete gadget, and the edges are labelled with which argument it is
+producing for the gadget that consumes its output.  Then we try to satisfy the
+trees starting from the leaves and working upwards, memoizing failures so that
+we do not need to try those possibilities again.
+
+My idea:
+
+Make the list of acceptable gadget combinations in one sweep over the tree.
+
+So, that's a bit vague.  Let's expound on exactly the mechanism by which
+that would happen.
+
+Let's build it like the maximal munch function structure.
+
+For every expression type that we hit, we have a set of rules for affecting
+that computation.  Those rules are "abstract" in the sense that they do not
+specify concrete gadgets or registers:  they specify _computation schema_.
+
+Things I will need:  bipartite graph for register transfers.  This seems like
+a good way to dive into this part of the problem.
+
+let transfer_path = ? list
+
+This could be implemented like a hash table.
+
+(vsrc,vdst) -> list of ways to 
+
+| StoreMemG(ae,ve,s) ->
+
+  Seq(
+    Parallel(
+      Seq(Stmt(reg = reify ae),Stmt(vaddr = reg),Output(vaddr)),
+      Seq(Stmt(reg = reify ve),Stmt(vwhat = reg),Output(vwhat))),
+    Stmt(StoreMem(vaddr,vwhat))
+    
+    The availability of gadgets is what is driving the search.
+    
+    I.e., we have constraints on what vaddr and vwhat are.
+    
+    I.e., we have an explicit constraint on vaddr and vwhat:
+    
+   (vaddr,vwhat) \in Dom(StoreMem) &&
+   (vwhat \notin Clobb(ParBranch1) || vaddr \notin Clobb(ParBranch2))
+   
+    Can explicitly expand these things to disjunctions / conjunctions.
+    
+    So far this is just the theory of equality?
+    Seems like it, but not the conjunctive one necessarily.
+    First clause can be directly expressed in CNF form.
+    Second clause needs to be rewritten.  vwhat \in Pres(ParBranch1) || vaddr \in Pres(ParBranch2).
+    This can directly be written as one CNF clause.  vwhat = Pres(ParBranch,1) || ... || vwhat = Pres(ParBranch,N) || ...
+    
+    Well, this is nice, but it seems still more complicated than this.
+    The first part is a huge disjunction that influences the next clause directly.
+    I.e. the meaning of the Pres predicate is dependent upon the domain element chosen in the first line.
+    We could encode that in CNF for all possible choices:
+    
+    Hmm, could we?  I want to do ... yeah... we can.
+    
+    ( (vaddr,vwhat) != choice || ... )
+    
+    So these clauses are all satisfiable individually, but not 
+    
+type stmt =
+
+type constraint 
+
+    
+  
+  amt = reify ve
+  vwhat = amt
+  storemem vaddr, vwhat
+  
+  So this depends upon what registers are available for storemem.
+
+type verified_results =
+{
+  (* Consistent stack displacement *)
+  stack_displacement: int32;
+  
+  (* Depth of return address within stack *)
+  return_address_displacement: int32;
+  
+  (* Those registers which are preserved *)
+  preserved_regs:     IRUtil.VarSet.t triplicate;
+  
+  (* Those registers which are copied *)
+  copied_regs:        VarVarSet.t triplicate option;
+  
+  (* Those registers which are set to constants *)
+  set_const:          VarInt32Set.t triplicate option;
+  
+  (* Reads from memory, non-ESP *)
+  mem_read_const:     VarVarInt32Set.t triplicate option;
+  
+  (* Reads from memory, ESP *)
+  esp_read_const:     VarInt32Set.t triplicate option;
+
+  (* Writes to memory, non-ESP *)
+  mem_write_reg:      VarVarInt32Set.t triplicate option;
+  
+  (* Writes to memory, ESP *)
+  esp_write_reg:      VarInt32Set.t triplicate option;
+
+  (* Writes to memory as binop, non-ESP *)
+  write_binops:       VarBinopVarInt32Set.t triplicate option;
+  
+  (* Writes to memory as binop, ESP *)
+  write_esp_binops:   VarBinopInt32Set.t triplicate option;
+
+  (* Reads from memory as binop, non-ESP *)
+  read_binops:        VarBinopVarInt32Set.t triplicate option;
+  
+  (* Reads from memory as binop, ESP *)
+  read_esp_binops:    VarBinopInt32Set.t triplicate option;
+
+  (* Register-based binops *)
+  reg_binops:         VarVarBinopVarSet.t triplicate option;
+}
+
+Copies:
+- Reg-to-reg
+
+Read:
+- Mem-to-reg
+
+Write:
+- Reg-to-mem
+
+Constant:
+- Const-to-reg
+
+Binops:
+- Reg-to-reg
+- Mem-to-reg (read)
+- Reg-to-mem (write)
+
+QooL:
+
+Expr
+- Const(int32)
+- Var
+- Binop(lhs,op,rhs,size)
+- LoadMem(addr,size)
+
+Stmt
+- WriteMem
+
+Compound patterns:
+
+type gadget = int32
+
+type schedulable = 
+| Nop
+
+(* One gadget *)
+| Atom of gadget * IR.var * IRUtil.VarSet.t
+
+(* Do both, but not in a fixed order *)
+| Unordered of schedulable * schedulable
+
+(* Do two actions in a row *)
+| Seq of schedulable * schedulable
+
+(* *)
+let munchExpr e = 
+  let munch_generic_binop be = () in
+  let munch_
+  
+| Const(i32,s) -> 
+  GadgetCache.replicate_computations (GadgetCache.load_const_of_size gc s)
+
+| Binop(lhs,op,ReadMem(x,s) as rhs) ->
+  (* ReadBinop(x,op,lhs,s) *)
+
+| Binop(ReadMem(x,s) as lhs,op,rhs) when is_commutative op ->
+  (* ReadBinop(x,op,rhs,s) *)
+  (* reify lhs
+     reify rhs
+     get list 
+     Binop(, *)  
+
+if op is commutative
+then R
+
+What ways can we come up to copy registers?
+* Verified copy gadgets
+* Binop(Const(-1l,s),And,Reg)
+* Binop(Const(0l, s),Or, Reg)
+* Binop(Const(0l, s),Xor,Reg)

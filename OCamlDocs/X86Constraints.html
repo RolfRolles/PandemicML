@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="X86CFGAssembler.html">
+<link rel="next" href="X86Decode.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="IDA" rel="Chapter" href="IDA.html">
+<link title="IDAColor" rel="Chapter" href="IDAColor.html">
+<link title="IDAGUI" rel="Chapter" href="IDAGUI.html">
+<link title="IDAGraph" rel="Chapter" href="IDAGraph.html">
+<link title="IDAHotKey" rel="Chapter" href="IDAHotKey.html">
+<link title="IDATopLoop" rel="Chapter" href="IDATopLoop.html">
+<link title="JITRegion" rel="Chapter" href="JITRegion.html">
+<link title="Z3" rel="Chapter" href="Z3.html">
+<link title="IR" rel="Chapter" href="IR.html">
+<link title="IRLocalOpt" rel="Chapter" href="IRLocalOpt.html">
+<link title="IRTypeCheck" rel="Chapter" href="IRTypeCheck.html">
+<link title="PpIR" rel="Chapter" href="PpIR.html">
+<link title="X86" rel="Chapter" href="X86.html">
+<link title="X86CFG" rel="Chapter" href="X86CFG.html">
+<link title="X86CFGAssembler" rel="Chapter" href="X86CFGAssembler.html">
+<link title="X86Constraints" rel="Chapter" href="X86Constraints.html">
+<link title="X86Decode" rel="Chapter" href="X86Decode.html">
+<link title="X86Disasm" rel="Chapter" href="X86Disasm.html">
+<link title="X86Encode" rel="Chapter" href="X86Encode.html">
+<link title="X86InternalOperand" rel="Chapter" href="X86InternalOperand.html">
+<link title="X86LocalOpt" rel="Chapter" href="X86LocalOpt.html">
+<link title="X86TextualAssembler" rel="Chapter" href="X86TextualAssembler.html">
+<link title="X86TypeCheck" rel="Chapter" href="X86TypeCheck.html">
+<link title="X86Util" rel="Chapter" href="X86Util.html">
+<link title="X86Random" rel="Chapter" href="X86Random.html">
+<link title="X86ToIR" rel="Chapter" href="X86ToIR.html">
+<link title="ASMUtil" rel="Chapter" href="ASMUtil.html">
+<link title="LowLevel-old" rel="Chapter" href="LowLevel-old.html">
+<link title="StringUtil" rel="Chapter" href="StringUtil.html">
+<link title="Util" rel="Chapter" href="Util.html"><link title="Union types" rel="Section" href="#6_Uniontypes">
+<link title="Functions" rel="Section" href="#6_Functions">
+<title>X86Constraints</title>
+</head>
+<body>
+<div class="navbar"><a href="X86CFGAssembler.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="X86Decode.html">Next</a>
+</div>
+<center><h1>Module <a href="type_X86Constraints.html">X86Constraints</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> X86Constraints: <code class="code">sig</code> <a href="X86Constraints.html">..</a> <code class="code">end</code></pre>This module shouldn't be used outside of the assembler and random 
+    instruction generator.  It is used to ensure that things that ought to have
+    the same size, do.  For instance, consider the instruction encoding 
+    <code class="code">mov Ev, Gv</code>, and consider the instruction <code class="code">mov eax, bx</code>.  <code class="code">eax</code> is in fact 
+    of type <code class="code">Ev</code>, and <code class="code">bx</code> is of type <code class="code">Gv</code>, but their sizes must match, and 
+    hence this is an invalid instruction.  Something similar can be said for 
+    instructions that take multiple memory expressions (e.g. <code class="code">movsb</code>); both the
+    source and the destination must have the same address size.<br>
+<hr width="100%">
+<br>
+<span id="6_Uniontypes"><h6>Union types</h6></span><br>
+<br><code><span id="TYPEopnd_size_constraint"><span class="keyword">type</span> <code class="type"></code>opnd_size_constraint</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">OpNone</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >No constraints.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Op12SizeEq</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Size of operands one and two must match.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Op123SizeEq</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Size of operands one, two, and three must match.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Op12GvMa</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >LHS is 16 or 32; RHS is double.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Op12GvMp</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >LHS is 16 or 32; RHS is 32 or 48, respectively.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Op12GzMp</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >LHS is 16 or 32; RHS is 32 or 48, respectively.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+<div class="info">
+Size-related constraints for a list of operands.<br>
+</div>
+
+<br><code><span id="TYPEopnd_addr_constraint"><span class="keyword">type</span> <code class="type"></code>opnd_addr_constraint</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">AddrNone</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >No constraints.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Addr12SizeEq</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Address sizes of operands one and two must match.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+<div class="info">
+Address size-related constraints for a list of operands.<br>
+</div>
+
+<br>
+<span id="6_Functions"><h6>Functions</h6></span><br>
+<pre><span id="VALsatisfies_size_constraints"><span class="keyword">val</span> satisfies_size_constraints</span> : <code class="type"><a href="X86.html#TYPEx86operand">X86.x86operand</a> list -> <a href="X86Constraints.html#TYPEopnd_size_constraint">opnd_size_constraint</a> -> bool</code></pre><div class="info">
+Does the list of operands conform to the given size constraints?<br>
+</div>
+<pre><span id="VALsatisfies_addr_constraints"><span class="keyword">val</span> satisfies_addr_constraints</span> : <code class="type"><a href="X86.html#TYPEx86operand">X86.x86operand</a> list -> <a href="X86Constraints.html#TYPEopnd_addr_constraint">opnd_addr_constraint</a> -> bool</code></pre><div class="info">
+Does the list of operands conform to the given address size constraints?<br>
+</div>
+<pre><span id="VALsatisfying_size_configurations2"><span class="keyword">val</span> satisfying_size_configurations2</span> : <code class="type"><a href="X86Constraints.html#TYPEopnd_size_constraint">opnd_size_constraint</a> -><br>       (<a href="X86TypeCheck.html#TYPEopndsize">X86TypeCheck.opndsize</a> * <a href="X86TypeCheck.html#TYPEopndsize">X86TypeCheck.opndsize</a>) list</code></pre><div class="info">
+Returns a list of conformant size configurations for two operands, given
+    which constraint is supposed to be enforced.<br>
+</div>
+<pre><span id="VALsatisfying_size_configurations3"><span class="keyword">val</span> satisfying_size_configurations3</span> : <code class="type"><a href="X86Constraints.html#TYPEopnd_size_constraint">opnd_size_constraint</a> -><br>       (<a href="X86TypeCheck.html#TYPEopndsize">X86TypeCheck.opndsize</a> * <a href="X86TypeCheck.html#TYPEopndsize">X86TypeCheck.opndsize</a> * <a href="X86TypeCheck.html#TYPEopndsize">X86TypeCheck.opndsize</a>) list</code></pre><div class="info">
+Returns a list of conformant size configurations for three operands, given
+    which constraint is supposed to be enforced.<br>
+</div>
+<pre><span id="VALsatisfying_addr_configurations2"><span class="keyword">val</span> satisfying_addr_configurations2</span> : <code class="type"><a href="X86Constraints.html#TYPEopnd_addr_constraint">opnd_addr_constraint</a> -><br>       (<a href="X86TypeCheck.html#TYPEopndsize">X86TypeCheck.opndsize</a> * <a href="X86TypeCheck.html#TYPEopndsize">X86TypeCheck.opndsize</a>) list</code></pre><div class="info">
+Returns a list of conformant address size configurations for two operands, 
+    given which constraint is supposed to be enforced.<br>
+</div>
+<pre><span id="VALsatisfies_constraints"><span class="keyword">val</span> satisfies_constraints</span> : <code class="type"><a href="X86.html#TYPEx86operand">X86.x86operand</a> list -><br>       <a href="X86Constraints.html#TYPEopnd_size_constraint">opnd_size_constraint</a> -><br>       <a href="X86Constraints.html#TYPEopnd_addr_constraint">opnd_addr_constraint</a> -> bool</code></pre><div class="info">
+Given a list of operands, an operand size constraint, and an address size
+    constraint, return true if the operands satisfy the constraints.<br>
+</div>
+</body></html>

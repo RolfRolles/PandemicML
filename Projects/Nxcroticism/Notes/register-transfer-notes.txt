@@ -1,0 +1,206 @@
+  (* Get all outgoing edges *)
+  
+  (* First order of business:  add to graph all paths between this vertex and 
+     those higher in the stack.  Do not perform this step for the existing
+     paths, which are of length 1. *)
+
+(* A work item is what?
+   A path, in reverse
+type stack_entry = vertex * IRUtil.VarSet.t * gadget list
+type work_item = vertex * stack_entry list
+*)
+
+
+
+  (* Saturate the map *)
+  (* For all pairs of same-size registers (vs,vd) 
+     
+     Beginning with some register, say, eax.
+     Compute all paths eax -> r, where r <> eax.
+     Prune the paths
+     
+     Maybe we should use an actual OCamlGraph graph for this, as I am not sure
+     the set of pairs data structure will perform properly.
+     
+     Reason:  we have no way to query "give me all of the nodes that eax is 
+     connected to" without explicitly checking the existence of all pairs like
+     (eax,ebx).
+     
+     Idea for how the algorithm should work:
+     
+     Basically a breadth-first search.
+     
+     Start at some vertex v.
+     Consider all outgoing vertices of v, OV(v).
+     Now look at x \in OV(w) for all w \in OV(v).
+     This corresponds to examining all nodes two hops away from v: v -> w -> x.
+     Check to see whether we have a path from v -> x already.
+     Determine whether we should include it in the graph (clobber subset checking over all paths).
+     If we should, then add it to the graph.
+     
+     Trying to determine:  when do we "stop" this process?
+     
+     Does it make sense to go back to a vertex that we have previously examined?
+     
+     For example, if we already considered a -> b, should we consider a path like a -> b -> c -> b?
+     
+     It seems like this could only add to the clobber set of the best path from a -> b, and cause infinite loops.
+     Maybe not though.  Still struggling with this.
+     
+     OK, so a problem example would be something like this:
+     
+     a -> b: { e }
+     b -> c: { }
+     a -> c: { e, f }
+     
+     This set of constraints implies that a -> c: { e }, whereas our initial 
+     unsaturated graph has a different/worse path a -> c: { e, f }.  So the
+     discovery of this new path triggers us to have to search from a -> b -> 
+     onwards again.
+     
+     So really, it seems like there should be some element of "add the inferred
+     paths to the graph, and then continue processing the graph based on that
+     new information."
+     
+     I'm starting to conjure a new algorithm that works like this:
+     
+     + Recursive function receives a reverse-order list of the nodes that have 
+       been traversed up to that point
+     
+     + match l_rev_visited with
+       | []   -> don't add
+       | [x]  -> don't add -- this corresponds to direct edges from x anyway
+       | _::xs -> add paths for xs.vertex -> currentv w/labels + sets
+                  don't need to go cartesian up the list recursively because
+                  those will be accomplished by previous calls to this 
+                  recursive function.
+
+     Should this be the whole algorithm?
+     
+     I could picture maybe a stack of contexts to process.
+     
+     Set every path to explore into a list
+     Need some way to remove a path from the worklist if it is already implied
+     by the graph.  This seems tricky.  Maybe I could put some sort of boolean
+     in the work item structure.
+     
+     Basically, we are faced with the problem that we need to explore the graph,
+     without exploring it excessively.  What does "excessively" mean?  If a 
+     path is worse than a known one, we should not continue exploring that path.
+     How do we bootstrap the process, though?  Because we can only put in paths
+     that we know about at the beginning, which are not better than the existing
+     paths (because they are the existing paths).  How do we force the algorithm
+     to explore these paths?
+     
+     I suppose we could keep a boolean called is_known.  But does that help us?
+     
+     Maybe we could have two work-lists.  Macro work items, and micro work items.
+     The macro work item list contains all variables to explore starting from.
+     So we could dequeue a macro item, and then bootstrap the micro work item 
+     list by computing the list of all edges emanating from that vertex before
+     calling it.  From there the algorithm could explore the >2-length paths.
+     If it encounters a new / superior register pathway, it enqueues that as a
+     work item.  Take care of all of the micro work items, then return to the
+     macro work item loop.
+     
+     By god, I think that'll do.
+     
+     Perhaps an optimization:
+     
+     Bootstrap the graph with the null paths
+     Instead of calling "initial map", use these values as the macro work items.
+     Then we won't have to worry about any sort of convoluted logic about when
+     to add edges to the graph versus when not to.
+     
+     Actually that might not work.  Let's say we have a -> b and b -> c.
+     When we add a -> b, b -> c is not present, and so there is no way to 
+     traverse a -> b -> c.  When we add b -> c, there are no outgoing edges
+     of c, and therefore we are done.
+     
+     This is not the course of action that needs to happen.  So for now, it
+     looks like we need to indeed still compute the initial mapping.
+*)
+
+
+  (* Now, for all children of this vertex, add a work item to the stack *)
+  
+  let outgoing_edges = ??? get_successors ??? g item.vcur in
+  only process the edges 
+  is_superior_or_nonexistent 
+  
+
+
+  NOW WHAT?
+  
+  Now we need to enqueue new work items.
+  How should we do that?
+  That would be done by adding to the l_rev_visited stack  
+  
+  I tried to make a nice fucking elegant algorithm, and I'm not even sure if it's 
+  useful or a good idea.
+  
+  How do I prevent the exploration of useless paths?
+              
+              (* Check against existing paths, and add them if they are not 
+                 inferior to the others.  Remove the paths that are inferior to
+                 it. *)
+            (* Ok, so now we want to describe all of the subpaths on this path
+               that terminate in this vertex.  We start from the bottom and move
+               towards the top.
+               
+               (vgrandparent,item.vcurrent,IRUtil.VarSet.union s_clobber_p s_clobber_gp,l_gadgets_gp@l_gadgets_p) is an edge.
+               Try to add it to the graph.
+               If the edge is subsumed by an existing edge, don't add it.
+                *)
+            
+         )
+         g
+         xs
+  in
+  (* Now look at all the children of the parent node and *)
+          
+      
+    add paths for xs.vertex -> currentv w/labels + sets
+    don`t need to go cartesian up the list recursively because
+    those will be accomplished by previous calls to this 
+    recursive function.
+  
+(*
+     
+     
+     So I'm starting to picture a function that looks like this
+     
+     type bfs_helper =
+     {
+       g:            graph;
+       startv:       vertex;
+       currentv:     vertex;
+       s_visited:    IRUtil.VarSet.t;
+       s_clobbered:  IRUtil.VarSet.t;
+       l_gadgetpath: gadget list;
+     }
+     
+     let g = 
+     g startv currentv s_visited s_clobber l_gadgetpath 
+     let rec bfs help =
+       let outgoing_edges = Graph.get_successors help.g help.currentv in
+       (* First underscore is current vertex, unnecessary as it coincides with help.currentv *)
+       List.fold_left (fun help (_,terminalv,edge_l_gadgets,edge_s_clobbered) ->
+         (* Look up all direct edges startv -> terminalv *)
+         let direct_edges = Graph.get_all_edges help.startv terminalv in
+         (* Extend to the *)
+         let s_clobber_extended    = IRUtil.VarSet.union edge_s_clobbered help.s_clobbered in
+         let l_gadgetpath_extended = help.l_gadgetpath@edge_l_gadgets in
+         
+         
+         
+         let newhelp = { help with 
+       
+     
+     
+  I
+  
+  *)
+  
+  l_v_general_registers
+  

@@ -1,0 +1,72 @@
+What do I have?
+- ML representation of X86 grammar and disassembler table
+- Pattern-match arms corresponding to disassembled instructions plus the corresponding IR translation
+
+What do I want?
+- A fusion of the disassembler and the IR translator that elides intermediary data structures
+
+How do I get there in big steps?
+- It seems clear that these two objects "compose" with one another quite naturally.
+- Given as input the following symbolic variables:
+- - EIP:  within global array
+- - Register+flags blob
+- - Memories
+- Walk the disassembler table.  For each leaf, look up the corresponding IR translation for each.  If it doesn't exist, the instruction is not usable and hence considered invalid.
+- For the ones that do exist, return a list of modifications against the state.
+
+- Okay, that's pretty simple.  But what about the fact that we're using generalized disassemblers on concrete instructions?  Surely this is going to cause pain.
+- Well ... why does it have to?  Let's view an "instruction IR translator" as "a sequence of IR instructions that reference generalized variables".  Now we can specialize this generalized sequence by using the IR var -> expression substitutor.  Just replace "generalized var" with "concrete expression", and now we have a specialized IR translation.
+- Okay, that's very simple.  Why isn't it done yet?
+
+How do I get there in medium-sized steps?
+- 1 The IR translator synthesizer is deficient with respect to directly implementing the vision above.
+- - 1 Not all instructions planned to be covered, are covered.
+- - - Let bindings might ease some of them?
+- - 2 Only the 8-bit versions of instructions are covered.
+- - - Attempt to generalize them to 16- and 32-bit versions.
+- - 3 For the moment, it produces IR statements regarding *single concrete instructions*.
+- - - Replace vConc#I with vAbs#I 
+- - - Return the IR statements with a list: [AbsOpnd,vAbs#I]
+- - - There might be some issues with variables versus expressions here...
+- - - [AbsOpnd#1,Some(vAbs#I),eAbs#I]
+- - - Can replace them all in one go.
+- - - Furthermore, 
+- 2 The disassembler is constantly in and out of a state where it is amenable to this type of thing.  I try to convert everything to abstract operands, and then something causes me to stop doing that, so I go back to my old disassembler.
+- Do randomized testing to ensure that the disassemblers produce the same things.
+
+Finishing the generalization stuff will require some further thought.  Like:  how do we specify the valid encodings for a given instruction that we want to generalize?
+
+I.e. I'm going to pass in an instruction like "add al, bl" and some list of abstract operand types that describe the valid generalizations.
+Does it actually require further thought than that?  Can I not just pass in a list of abstract operands and say, "this generalizes to that"?
+
+How do I get there in small steps?
+1 1 Review the IR translator output and identify those instructions that are presently lacking part or all of their translations.
+
+- - shld: should just be (x<<s)|(y>>(8-s))
+- - shrd: should just be (x>>s)|(y<<(8-s))
+- - rol: OF: Use the other machinery
+- - ror: OF: Use the other machinery
+- - rcl: need to implement modulus by 9
+- - rcr: need to implement modulus by 9
+
+- - div: lacks support in evaluator
+- - idiv: lacks support in evaluator
+- - aam(1): need to support constants, lacks support in the emulator
+- - aad(1): need to support constants
+- - imul(3): need to support constants
+- - imul(2)
+
+1 2 Finish generalization function
+- - Used existing generator capability to expand the sizes of things.
+- - Doesn't work yet:
+- - - adc/sbb (Cast(Unsigned,TypeReg_8,eCF) -> _16/_32 doesn't work w/existing machinery)
+- - - mul(1)/imul(1):  not sure entirely
+- - - ror/rol:  something to do with generalizing the size of a constant 0
+
+1 3 This is trivial, just manually supply the list of abstract operand/var/expr triple lists.
+
+2 Generalize the disassembler and figure out what is wrong with it.
+- Merge the changes from the other disassembler code back in.
+- Organize how to use random testing to be confident in the results.
+
+3 This is the "composition" stage where we walk the disassembler table and choose compatible IR translations.

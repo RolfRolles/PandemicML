@@ -1,0 +1,5 @@
+PE32.cmo:
+PE32.cmx:
+PEParse.cmo: PE32.cmo PEParse.cmi
+PEParse.cmx: PE32.cmx PEParse.cmi
+PEParse.cmi: PE32.cmo

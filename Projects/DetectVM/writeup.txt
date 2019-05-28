@@ -1,0 +1,380 @@
+Static and Dynamic Statistical Classification and Clustering of Executable Obfuscators
+
+0.  Abstract
+
+We consider several problems surrounding executable packers, and how one might apply statistical techniques to solve them.  We propose a feature space that exploits instruction encoding information on a fine-grained level, and a number of potential extensions to the space that further magnify interesting details about encoding.  We then compare and contrast the two settings in which this information might be collected, statically and dynamically, and discuss implementation strategies.  We propose a series of novel domains for the application of statistical machine learning techniques.  We then discuss present and future countermeasures that malware authors might employ in response to the existence of such systems.
+
+1.  Inspiration and background
+
+The idea behind this project is that obfuscators are different, and that maybe those differences manifest themselves in a way that is amenable to statistical fingerprinting.  Reasons why this might not be true are discussed in section 6.  We seek to improve upon the state of the art with respect to packer classification, which largely consists of byte-signatures with wildcards applied to the packer's entrypoint.
+
+The inspiration for this project comes from the "Eigenviruses for Metamorphic Virus Recognition" paper [1].  That paper implements the following machine learning system for detecting metamorphic viruses:
+
+Training:
+1) Collect N metamorphic virus samples
+2) Take some linearly-ordered subset (size M) of each sample's raw bytes as a feature vector; pad short samples with zeroes
+3) Compute "covariance matrix" C (this is what the paper calls it, although since they do not mean-normalize, I'm not sure this terminology is proper)
+4) Singular-value-decompose C
+5) Choose the most contributory eigensubspace (i.e. the M' most contributory eigenvectors, ranked by descending eigenvalue)
+6) Project all samples into the eigenspace
+
+Detection:
+1) Extract M consecutive bytes (the paper does not explain how these bytes are chosen) and map into the eigenspace
+2) Compute Euclidean distances to all other points; have manually-specified thresholds for each family
+
+The feature space that the Eigenviruses paper employs is somewhat incredulous.  Consider the following two assembly-language programs, where the bytes to the left of the instructions correspond to the individual x86 machine-code encodings:
+
+Program #1:
+
+05 01 00 00 00 add eax, 1
+05 02 00 00 00 add eax, 2
+05 03 00 00 00 add eax, 3
+; ...
+05 FF FF FF FF add eax, 0FFFFFFFFh
+
+Program #2:
+
+90             nop
+05 01 00 00 00 add eax, 1
+05 02 00 00 00 add eax, 2
+05 03 00 00 00 add eax, 3
+; ...
+05 FF FF FF FF add eax, 0FFFFFFFFh
+
+These programs are virtually identical, and we would like for our methods to strongly indicate this.  However, suppose we employ the Eigenvirus methodology on these two byte-vectors, starting from the beginning.  The feature vector for these two samples would look like this:
+
+s1 = [05;01;00;00;00;05;02;...]
+s2 = [90;05;01;00;00;00;05;...]
+
+It is unclear why the bytes that happen to reside at position #X in two samples from the same metamorphic family are actually "correlated" in any meaningful way, especially considering that the authors of that paper propose no method to "align" the byte samples.  Keith:  am I missing something here?
+
+In actuality, adjacent bytes are related and connote higher-level semantic meanings; that is, the *peculiarities of the combinations of adjacent bytes* is what is important.  N-grams produce feature spaces that are large, coarsely ignore important details such as sub-byte bitfields, and generally do not take anything that could be considered a "refined" view of the data that is present.  In this work, we propose to exploit features of the instruction encodings to obtain richer and more pertinent information.
+
+1.1  Background
+
+A packer is a program that takes as input an executable, and produces as output a transformed executable with the same semantic behavior.  To speak in generalities, the way that packers operate is to take the existing contents of an executable, which is composed of a sequence of sections, which in turn contain the raw machine code and data that the compiler has generated from the original source code, and compress and/or encrypt those sections.  It adds a new section to the executable containing code that inverts those transformations and then transfers control back to the original program's entrypoint.  The new program's entrypoint is the beginning of the packer code.  This description ignores certain features of packers, including basic ones such as runtime reconstruction of the program's imports, and more advanced features such as stolen bytes and anti-dump.  
+
+Some people are more precise with their terminology:  a "packer" might be defined as a system of the type just described, where the unpacking code does not attempt to thwart efforts at reverse engineering but merely decompresses the executable; a "protector" might be such a system that does actively frustrate reverse engineers.  We take the viewpoint that all executable-to-executable translators are "packers", and these are the objects of interest in the rest of the paper.
+
+Packers frustrate attempts at automated malware analysis, because the exact same input sample might result in a different unique protected executable which then has to be fingerprinted in some way.  The number of signatures explodes as a result of packer usage.  Furthermore, packers might contain anti-virus evasion code, which puts vendors into a reactionary position where they are forced to fingerprint samples as they arrive as opposed to making headway towards preventative measures.
+
+Construction of unpackers is a tricky business.  "Dynamic" unpackers (those that actually execute the target program on the machine) can be relatively easy to code, but they are largely unacceptable in an antivirus context for fear of the unpacking process "losing control" of the program's execution, and malicious code executing directly on the host system.  To be completely safe, an unpacker has to be "static", i.e., not run the program in question.  Constructing static unpackers is a tremendously time-consuming endeavor that is sensitive to the most minute of details; very slight changes to a given packer necessitate changes to the unpacker, sometimes resulting in hundreds of versions of an unpacker for one packer family.  Static unpacking has the further disadvantage that, by definition, it can not handle unknown packers.
+
+Furthermore, unpacking can be made arbitrarily difficult.  A virtualization obfuscator (see my paper [2]) is a type of protection that takes the program's original x86 bytecode, translates it into a randomly-chosen bytecode language which is executed in a metamorphic obfuscated interpreter, and overwrites and destroys the original machine code.  The virtualization obfuscator's section in an executable is a mixture of VM bytecode (which, due to polymorphic encoding and metamorphism, appears to be random data) and x86 code responsible for implementing the interpreter (which we attempt to target statistically via a variety of features).  The x86 code itself is heavily obfuscated via a variety of techniques (as-hard-as-cryptography problems, NP-complete aliasing relationships, undecidable opaque predicates, inverse peephole optimization, stack obfuscation, junk code insertion, constant unfolding, etc).  Each virtualization obfuscator obfuscates quite differently.  
+
+2.  Proposed feature space
+
+The key insight in this paper is that packers and obfuscators are unique:  they generate unique sequences of instructions from some repertior of the processor's available encodings according to some probability distribution.  For example, here is a randomly chosen snippet of Code Virtualizer:
+
+LOOKHERE:00409966 push    ebp
+LOOKHERE:00409967 mov     ebp, 4
+LOOKHERE:0040996C add     edx, 467C30BAh
+LOOKHERE:00409972 sub     edx, 40CA6331h
+LOOKHERE:00409978 add     edx, ebp
+LOOKHERE:0040997A add     edx, 40CA6331h
+LOOKHERE:00409980 sub     edx, 467C30BAh
+LOOKHERE:00409986 jmp     loc_407D20
+
+And here is a random VMProtect snippet:
+
+.vmp2:0040A3DD rcr     edi, cl
+.vmp2:0040A3DF bsr     bx, cx
+.vmp2:0040A3E3 lea     ebx, [esp+arg_4E08F257]
+.vmp2:0040A3EA mov     ebx, eax
+.vmp2:0040A3EC inc     cl
+.vmp2:0040A3EE adc     ecx, edi
+.vmp2:0040A3F0 xchg    cx, di
+.vmp2:0040A3F3 mov     edi, eax
+.vmp2:0040A3F5 mov     cl, dh
+.vmp2:0040A3F7 pushf
+.vmp2:0040A3F8 movzx   ecx, al
+.vmp2:0040A3FB mov     ecx, 104h
+.vmp2:0040A400 cmc
+.vmp2:0040A401 cmc
+.vmp2:0040A402 bt      bx, cx
+.vmp2:0040A406 xor     al, al
+.vmp2:0040A408 jmp     loc_40F191
+
+There is a conspicuous difference in mnemonic distribution and instruction encoding in these two snippets.  The mnemonics and encodings employed by Code Virtualizer in the snippet above somewhat resemble code that a compiler might generate:  push, mov, add, sub, jmp.  However, the distribution of these instructions does not match compiler-generated code, in that there are five 'add' or 'sub' instructions in the same basic block.
+
+The VMProtect snippet, on the other hand, uses mnemonics that are rarely (if ever) found in compiler-generated code:  rcr, bsr, xchg, pushf, cmc, bt.  It also generates instruction encodings that specify subregisters (such as 'bsr bx, cx') with a substantially greater frequency than what a compiler would normally generate.
+
+With these examples as motivation, we proceed to describe the current design of the feature space.  We propose possible extensions in section 3.
+
+2.1  Mnemonics
+
+In the previous section, we showed two random snippets of x86 corresponding to two different obfuscators, and noted how they generated different mnemonics.  We compute a distribution over the 560 mnemonics present in the x86 instruction set supported by the disassembler.  We also compute the "entropy" of the mnemonic distribution (e.g., a base-560 logarithm computation).
+
+2.2  Instruction encoding on x86
+
+Consider the ubiquitous instruction "xor eax, eax", for setting the eax register to zero.  There are actually two distinct ways to encode this identical instruction:
+
+31 C0
+33 C0
+
+According to the Intel manuals, 31 is the opcode for Xor Ev, Gv, and 33 is the opcode Xor Gv, Ev.  Gv specifies a register of the current operating mode's size (unless modified by a size prefix) and Ev specifies either a memory location or a register of the same size.  In the case where the E-part specifies a register, the encodings can be used interchangeably.
+
+The "mod-RM" byte C0 breaks down into the following:
+
+#1  #2  #3
+11|000|000
+
+#1 is the "mod", and 11 specifies that the E-part is a register.  #2 is the "G-reg", which specifies the register zero (eax) should be used for the Gv term.  #3 is the "E-part", which, due to the mod, specifies the eax/zero register should also be used for the Ev term.
+
+Given the equivalence of these two encodings, different assemblers make different decisions as to which encoding should be used when they encounter an instruction such as xor eax, eax.  Some of them always prefer to use the Ev, Gv encoding for a given dual-register instruction, some of them use the Gv, Ev instead, and some of them are even randomized.  All of this, in theory, provides valuable statistical information.
+
+We use a modified disassembler engine which outputs not only the concrete instruction with its mnemonic, prefix set, and operands, but also its list of abstract operands (e.g., [Ev;Gv]).  There is a small and finite set of roughly 1,000 legal mnemonic/operand combinations on the x86 processor; we compute a distribution over these numbered categories.  As before, we also compute the entropy of the encoding distribution.  We do not currently, but we should, make one explicit feature that quantifies which direction an obfuscator takes for ambiguous encodings (although encoding this as a single feature might not be entirely meaningful, if the obfuscator makes opposite decisions for both halves of the relevant encodings, and also this information is already implicitly encoded on a very fine-grained level via the distribution of generated instructions).
+
+2.3  Further abstracted instruction encoding
+
+There are nearly a thousand instruction encodings on x86.  Clearly, this cannot be encoded with a single byte per encoding.  x86 uses a multi-level partitioning scheme to keep the encoding practical.  The most common instructions are encoded with a single opcode byte (plus whatever preceeding prefixes are present).  There is a group of "double-byte encodings", whose first byte is 0F and whose second byte is unconstrained.  There are also triple-byte encodings, 0F 38 xx and 0F 3A xx.
+
+Some obfuscators prefer instructions that happen to be encodable using single bytes.  Some obfuscators delve often into the double-byte range, which has the consequence that the statistical frequency of the 0F byte in executables protected by these obfusctators will be greater than that of random data (i.e. 1/256).  Almost no obfuscator generates instructions in the triple-byte ranges; these encodings are mostly used for SIMD and low-level instructions such as the virtualization and system management instructions.  Compilers for 64-bit machines do generate SIMD instructions, although they tend not to on 32-bit machines unless specifically instructed to via intrinsics.  Most commonly, these instructions are found in hand-written, processor-specific assembly language libraries, e.g. in graphics drivers.
+
+We compute a distribution and the entropy of these features over the instructions that we consider.
+
+2.4  Instruction length distribution
+
+Instructions have lengths.  We compute the distribution and entropy of these features.
+
+2.5  Byte value distribution
+
+We compute the distribution and entropy of the bytes that we encounter.
+
+3  Potential improvements to the feature space
+
+This system can potentially be improved in several ways.  There might be some middle-ground between the concrete instruction and the canonical abstract one that provides a reasonable tradeoff between expansion of the feature space and precise, relevant information.  The concrete instructions are not suitable as a feature space due to constant values in the instructions.  E.g., there would be 2^64 individual instructions along the lines of imul eax, [ebx+12345678h], 0FEDCBA98h; it is not clear that we would want to make such a differentiation anyway, given the wide variance in constants found in obfuscated code and the natural variance in address displacements of compiled code.
+
+Clearly the raw instructions cannot be used as features, so we have to abstract them; section 2.2 presented one such abstraction.  Thus, the question exists:  what is the best way to abstract the instructions?  In the sequel, we explore several avenues for differentiation.
+
+3.1  Decreasing the level of abstraction:  enumerating operand possibilities
+
+For example, the following instructions are mapped into the same category Xor Gv, Ev:  xor eax, eax; xor ebx, [edi]; xor ax, bx; xor ax, [edi+10h].  The issue here is that "E" is a static alias for register/memory, and "v" is an alias for "default or modified operand size".  We could enumerate the list of valid instruction combinations:  
+
+* Xor Gd, Gd (dword-sized register),
+* Xor Gd, Md (dword-sized memory access),
+* Xor Gw, Gw (word-sized register),
+* Xor Gw, Mw (word-sized memory access).
+
+This would increase the space of the feature set by a factor of at most four (since most instructions take two or fewer operands, with the maximum number being three operands, and many of these operands are not variable-sized and hence not subject to expansion).
+
+3.2  Decreasing the level of abstraction:  enumerating memory addressing possibilities
+
+The notion of a "memory access" is also an abstraction; an access can either be 32- (default) or 16- (overridden) bits, and can encode a variety of memory access types.  32-bit memory can be accessed in the following nine ways:
+
+* directly (dword ptr [401038h]), 
+* indirectly through a single register ([eax]), 
+* indirectly through a single register with displacement ([ebx+12345678h]), 
+* indirectly through a base and scale register ([eax+ebx]),
+* indirectly through a base and scale register with displacement ([eax+ebx+12345678h]),
+* indirectly through a scale register and a scale factor ([ecx*8]),
+* indirectly through a scale register and a scale factor with displacement ([ecx*8+12345678h]),
+* indirectly through a base and scale register with scale factor ([eax+ebx*4]),
+* indirectly through a base and scale register with scale factor and displacement ([eax+ebx*4+12345678h]).
+
+A 16-bit memory accesses can take the following five forms:
+
+* direct (word ptr [1234h]),
+* indirect through a single register ([ax]),
+* indirect through a single register with displacement ([ax+1234h]),
+* indirect through a base and index register ([bx+si]),
+* indirect through a base and index register with displacement ([bx+si+1234h]).
+
+Therefore there are 14 ways to access memory.  We might also want to further differentiate the case where the base register is the esp register, which happens frequently in obfuscated code.  Ignoring nonsensical operand possibilities, e.g. [esp*8], this would put us at 24 memory accessing possibilities.  That might be too many, considering that we would multiply each instruction encoding that took a memory expression by 24.  We might need to choose some subset.  
+
+We might also choose to dispense with differentiating 16-bit memory accesses, since these almost never exist in 32-bit compiled code (since they can only access the low 64kb of memory, which is non-allocable on modern Windows boxes as a mitigation against kernel NULL-pointer dereference exploits); the only exception to this is the common LEA instruction, which takes a memory address as operand but does not access memory.  We could choose to explicitly differentiate 16-bit memory accesses for the LEA instruction for a very tiny, constant-sized increase in the state space, thereby getting the best of both worlds.
+
+3.3  Incorporation of memory segment overrides
+
+In addition to the possibilities enumerated in the previous subsection, a further differentiation between memory accesses is that they might redirect into different segments.  Also, as a form of obfuscation, it is even possible to put one or more segment override prefixes on an instruction that does not access memory.  
+
+Although segmentation is a deprecated feature that is absent in 64-bit mode and mainly unexploited by commodity 32-bit operating systems, this information is still interesting because A) on Windows, the FS and GS segments refer to the TEB and the TLS area, respectively, and accesses to these segments are infrequent but particularly important; B) obfuscators sometimes preserve the original program's segment access characteristics, and sometimes they do not due to the equivalence of most segments -- this distinction could potentially provide a statistical linchpin for differentiating between such packers; C) some obfuscators generate superfluous segment prefixes, and some do not; D) compilers on x86/32 almost never generate segment overrides.
+
+There are six segments on x86:  ES, CS, DS, SS, FS, and GS.  We could follow several strategies in exploiting segment override information:
+
+* Model as a count of number of each individual prefix.  Since an instruction is at most 15 bytes in length, there could be at most 14 prefixes; therefore we could model this as 14^6 possibilities (7,529,536 possibilities per memory access).  I'm going to go ahead and call that impracticable.  Perhaps we could reduce this into some quotient type space, since there can not simultaneously be 14 CS prefixes and 1 ES prefix, for instance.
+* Model as a bit-vector for each of the above overrides:  2^6 = 64 possibilities for every instruction archetype.  Might not be practical.  Discards count information.
+* Model as a count of all prefixes.  This would be 14 possibilities per memory access; maybe practical.  Discards distinguishment of which actual prefixes are used, and the count of each individual segment prefix.
+* Model as an enumeration:  SEG_NONE, SEG_[ES|CS|DS|SS|FS|GS], SEG_MULTIPLE_SAME, and SEG_MULTIPLE_CONFLICTORY.  9 possibilities.  Discards count.
+* Model as a reduced enumeration:  SEG_NONE, SEG_ESCSDSSS, SEG_FS, SEG_GS, SEG_MULTIPLE_SAME, and SEG_MULTIPLE_CONFLICTORY.  6 possibilities.  The reduction exploits the fact that the ES, CS, DS, and SS segments all point to the same location on a user-mode x86 Windows platform (Linux too, I think).  Discards count and does not distinguish between the "ordinary" prefixes.
+* Model as a boolean on whether there is any override:  2 possibilities.  Certainly practical.  Discards count and distinguishment.
+
+If a nine-fold increase in the number of dimensions for those encodings that take variable-encoding memory operands is practical, then the enumeration option is probably the best.  If a nine-fold increase is not practical, but a six-fold increase would be, then the reduced enumeration option is second best.
+
+3.4  Group 1 prefixes
+
+There are four prefix groups on x86:  segment prefixes, operand size prefixes, address size prefixes, and "group 1" prefixes.  The previous sections have largely been dedicated to consequences of the presence of the first three categories of prefixes, as well as instruction encoding specifics.  The final group of prefixes contains the REP, REPNZ, and LOCK prefixes.
+
+LOCK prefixes specify interprocessor-atomicity for synchronization, and are only valid on the following sixteen instructions:  Adc, Add, And, Btc, Btr, Bts, Cmpxchg, Cmpxchg8b, Dec, Inc, Neg, Not, Or, Sbb, Xadd, Xchg, Xor.  For all other instructions, adding a LOCK prefix will result in a run-time exception when the processor tries to execute the instruction.
+
+The REP (or "repeat") prefixes modify the "string instructions" movsb/w/d (move string byte/word/dword) and stosb/w/d (store string byte).  With no REP prefix, movsb will copy a byte from ds:[esi] to es:[edi], and will increase esi and edi by one apiece.  With a REP prefix, the rep movsb instruction will repeat the operation described in the last sentence for the number of times specified in the ecx register, decrementing ecx to zero in the process.  The REPNZ prefix modifies the other two string instructions, cmpsb/w/d (compare string byte) and scasb/w/d (scan string byte), turning these instructions into single-instruction equivalences of the C functionality "memcmp" and "while(ecx-- && *edi++ != al);".
+
+The processor ignores REP prefixes for non-string instructions, although disassemblers commonly include the rep prefix in their textual output.  These prefixes are sometimes used by obfuscators to introduce some randomness into the disassembly listing, and are never generated by compilers for instructions other than movsb/w/d, stosb/w/d, and cmpsb/w/d.  I'm fairly certain that the processor will ignore the LOCK prefix for instructions for which the prefix is valid, if those instructions do not specify memory locations (e.g. lock add eax, ebx is the same as add eax, ebx).  Thus, they seem like a natural fit for inclusion in the feature space.  
+
+For the LOCK prefix, we would only need to double the number of encodings for the sixteen mnemonics listed above.  For the REP prefixes, we once again have a variety of possibilities, including:  has specific (4 possibilities per instruction), has any (2 possibilities), has enumerated value (4 possibilities, indistinguishable from option #1), count of each (14^2 possibilities in a naive encoding).  Given that obfuscators often generate the REP encodings interchangeably, the second possibility seems like the best one.
+
+3.5  Features derived from the above
+
+We can calculate a number of various metrics that summarize the above information:
+
+* Distribution and entropy of 32-bit memory-access type and segment;
+* Percentage of 16-bit memory operands;
+* Percentage of instructions with useless prefixes;
+* Distribution and entropy of useless prefixes;
+* Percentage of instructions with redundant prefixes;
+* Distribution and entropy of redundant prefixes;
+* Percentage of instructions that have a SIB byte in memory encoding;
+* Entropy of 32-bit constants;
+* Etc.
+
+3.6  Proposed expansion of feature space
+
+I propose the following expansion of the feature space.  This is borne of ignorance of the limits of machine learning techniques, so if it turns out that the resulting space is too large, it can be scaled back.
+
+* Do explicitly differentiate sizes and bitness of operands (< 4x state space expansion);
+* Explicitly differentiate type of memory access, with ESP-differentiation (20x increase for those instructions with variable-encoding memory operands), and 16-bit differentiation only for the LEA instruction;
+* Explicitly differentiate segments in memory accesses (6-9x increase for memory operands);
+* Explicit has-a accounting of REP prefixes for all instructions (2x state space expansion), and LOCK prefixes for 16 specific instructions.
+
+I will come up with a precise number of features entailed by these choices soon.  
+
+IGNORE In sum, the feature space will be about:
+IGNORE 
+IGNORE * num_misc_features = 1000; miscellaneous, existing features described hereinbefore;
+IGNORE * num_encodings = 1000 encodings * 4 sub-encodings/encoding;
+IGNORE * num_memory_differentiated = num_encodings * (fraction of encodings with memory operands) * 120;
+IGNORE * num_specific_tracks = 6 for LEA + 16 for LOCK instruction group
+
+4  Obtaining instructions
+
+The previous sections have discussed how to compute statistics over collections of instructions.  The question remains, however, of how to obtain these instructions in the first place.  As is usual with program analysis-related endeavors, there are two main methods by which this information might be obtained:  statically (by examining the binary without running it), and dynamically (running the executable under emulation).
+
+4.1  Static analysis
+
+Static analysis of obfuscated executables is particularly difficult, and most such efforts which have obtained any reasonable degree of results take a packer-specific approach.  The mentioned difficulties arise from:
+
+* Self-modifying code, which is very hard to reason about statically.  There is some dispute over the definition of the term "self-modifying".  One argument goes that self-modifying code must modify an existing instruction, which might have executed already and which could execute in the future.  Another, more general, argument is that self-modification occurs any time a memory address is written to and subsequently executed.  We prefer to use the latter generality.  For example, packers often keep most of their code encrypted or compressed prior to execution.  Packers will often execute some region of code and then perform a decryption of the next region to be executed, subsequently jumping to that location after decryption has finished.  In the case of compression, packers will often allocate some memory and decompress the buffer into that region.  Decoding of instructions that are encrypted or compressed will produce non-meaningful results that favor the single-byte instruction encodings.
+
+* Differentiation of code and data.  We only want to compute statistics over regions of bytes that correspond to code.  If packers keep their data in the packer section, this will skew the instruction distribution, once again in ways that favor single-byte encodings.
+
+* Variable-length instruction encoding on x86.  Consider any x86 instruction, such as
+
+.vmp2:00415639 E8 18 0E 00 00                    call    sub_416456
+
+This is only a meaningful instruction to consider if we have some reason to believe that the processor's EIP register might rest over the virtual address 00415639 at some point.  If that proposition is true, then is is unlikely that EIP would also reference the subsequent addresses 0041563A-0041563D.  Hence, we should not disassemble the instructions in that latter range, since they do not correspond to instructions that could be executed.  All of this rests on the notion of "could be executed", which is ultimately an undecidable control/data flow problem.  Obfuscator-specific solutions exist.
+
+We seek to build a general, packer-agnostic methodology, and therefore the prognosis for static analysis looks grim.  
+
+One noteworthy exception is virtualization obfuscation, which does not make use of self-modifying code, although it does store some data in the packer section.  Therefore, a static approach might disassemble starting from every byte in the packer section, collect the type of statistics described previously, and then apply some sort of machine learning technique(s) to actually make sense of the resulting statistics.  Obviously, the high-entropic data in the packer section will result in a lot of statistical noise.  However, in the case of VMProtect there will be some noteworthy characteristics such as an above-average distributions of the two-byte opcodes and the 0F byte.
+
+On the machine learning front, we could use supervised learning to analyze a corpus of labeled data, and then apply some sort of classification approach to decide which obfuscator produced a given executable.  This has already been implemented:  we use PCA to decompose the covariance characteristics associated with individual, known obfuscators, then map an unknown example into eigenspace and compute distances from the labelled corpus.  Testing shows this can reliably distingush obfuscators from one another, as well as differentiate purely random data from obfuscators.
+
+4.2  Dynamic analysis
+
+Dynamic analysis has a number of very compelling advantages over static analysis, in general and in this particular scenario.  None of the pitfalls listed in the static analysis section would cause a problem in a dynamic setting:  self-modification is irrelevant because what matters is the collection of instructions that actually execute; there is no code-data differentiation issue because only code is executed; variable-length instruction encoding is similarly irrelevant because we know EIP at every program point.  
+
+There are also some disadvantages of dynamic analysis.  While static analysis techniques are overapproximative (they consider behaviors that can't happen at runtime), in a dynamic context we only consider those instructions that actually execute ("underapproximative" of the entire program), and hence the statistical content of the non-taken branches is ignored.  This could lead to problems if different options may be applied at the time of protection that cause different code paths in the packer to execute, and the various paths have different statistical qualities.
+
+Another drawback is that the simplest, entirely deterministic packer with no polymorphism or metamorphism will produce different statistical frequencies for different samples.  This is because of loops in the packer program.  Nearly every packer in existence compresses its input at protection-time and uses a decompression library at runtime.  Different input programs will result in different compressed data blobs, which will cause different paths to execute in the decompressor a different number of times in a manner that is somewhat correlated with the input file's size and entropy.  Statements like this one are generally true for any loop that might execute a variable number of times, and not just decompression routines.  If we add polymorphism or metamorphism into the equation, we end up with loops containing different instructions that execute a different number of times.  There are several ways to combat the loop issue in a dynamic setting.  We could keep a bit set of addresses that we've executed and only count each instruction once.  We could build the packer's control flow graph on the fly and detect the execution of back edges.  We could use offline trace processing to determine where the loops are.  We could ignore it entirely.  All of these techniques have tradeoffs involving speed and memory/disk consumption, and even which statistics are calculated.
+
+There are some technical issues in getting an emulation-based classifier/clusterer to work.  We seek to obtain a trace of all of the instructions that are triggered during a given execution of some process.  To do this, we need to ensure that we're only considering one specific process, and no other.  This is challenging to implement using a system emulator such as Bochs or QEMU, which run entire operating systems and do not have the notion of a "process".  We can write a kernel driver for the guest operating system to monitor process creation, determine the value of the page table control register CR3 when our process is executed, inform the host system somehow of that value (perhaps by adding a non-existent instruction "tellhost" to the emulator's instruction set, and using that instruction in the driver), and then only consider the instruction stream when CR3 matches.
+
+Once we can target a process specifically, we also need to make sure that we're only considering instructions that are under the purview of the packer; we do not want to pollute the statistics by incorporating compiled system library code which changes across service packs and major operating system releases.  If the packer calls into a system library, we need to ignore all instructions until control flows back into the packer.  I'm not entirely certain on how to accomplish this.  Let's keep a list of loaded modules associated with the executable (which will need to be updated dynamically in case libraries are loaded at runtime), and ignore any instruction where EIP is in kernel space or belongs to some module other than the main executable.  This will allow us to continue to track execution in dynamically-allocated memory regions.  This will need testing and perhaps changes, if it happens that the loaded modules also execute code in allocated regions.
+
+We only want to consider the statistical characteristics of the packer itself, as opposed to the executable that it is packing, which requires us to differentiate between the two.  For standard packers, this boils down to "automatic unpacking" and is well-studied in the literature (if not entirely trivial); we basically want to determine the precise moment that control is transferred from the packer into the main executable.  For virtualization obfuscators, this is more difficult since the executable's code is temporally interleaved with the packer.  However, the Georgia Tech paper [3] also covered the problem of differentiation between the two (I believe their approach was off-line, however).  For "custom packers" that do their best to resemble a standard executable, this could be challenging.
+
+Dynamic emulation is subject to detection attacks that exploit discrepancies between the software implementation of the system, and the genuine, physical article.  Malware often uses techniques to detect and evade anti-virus emulators, although it is not frequently the case that they similarly target full-blown system emulators such as Bochs or QEMU.
+
+5  High-level goals
+
+Hereinbelow, we propose a series of automated systems making use of the instruction encoding feature space.
+
+5.1  Classifying packers dynamically
+
+Polymorphic packers have plagued reverse engineers for over a decade.  The problem is particularly acute in a scenario where a reverse engineer cannot obtain the packer itself for local study, and instead a collection of distinct reverse engineers deals with a stream of distinct protected instances.  Being able to differentiate polymorphic packers has a number of advantages, including potential attribution, informing an unpacking strategy, and that certain packers (e.g. those with anti-antiviral-emulation code) can be declared as being purely malicious and never legitimate, thereby obviating the need to analyze them.
+
+This problem can be considered either in a supervised or unsupervised learning capacity.  We could imagine a system that began with many labelled examples (such data sets do exist) and produced a statistical classifier that could then be applied against unknown samples.  The downside to this technique is that unknown packers are unknown by definition, therefore data are less likely to exist in labelled form (which is a time-consuming process that is performed by highly-paid experts), and furthermore new packers appear on a regular basis.
+
+Therefore, it might be more natural to pose the unsupervised version of the problem:  given a large, unlabelled data set, we want to cluster the components into packer families.  The number of families is unknown and will increase over the lifetime of the project.
+
+Question for Keith:  to what extent is it possible to make use of labelled data in an unsupervised learning task?  I realize that "labelled data" is somewhat antithetical to "unsupervised learning".  Your thoughts generally on this subsection would be appreciated.
+
+5.2  Assisting in dynamic, automatic unpacking
+
+Given that packers and compilers have radically different statistical profiles with respect to the instructions that they generate, it seems reasonable that we could compute a rolling window of the past, say, 1000 instructions and compare them against the profiles of the entrypoints of various compiler runtime libraries (the first pieces of code that execute in most compiled executables).  This could then tell us whether we had switched from the "packer phase" to the "executable phase", and give us a range where the executable's original entrypoint lies.  
+
+One problem with this idea is that the proposed feature space is very large; it would be very expensive memory-wise to fit 1000 instances of the instruction statistic structure into memory (for a true "rolling" effect), and it would be similarly expensive computationally to perform thousands of floating-point division instructions in order to finalize one of these instances for every single emulated instruction.  Engineering solutions to these problems might exist; the SIMD instruction set and multi-core processing could come in handy here.
+
+Another problem with the idea is that packers could simply include a 1000-instruction sequence with statistical similarity to an existing compiler runtime library, which would trick the system into thinking that unpacking was complete.
+
+Keith:  Once again, your opinion on the statistical aspects of this idea would be appreciated.
+
+5.3  Classifying virtualization obfuscators statically
+
+This application has already been discussed in section 4.1:  we use brute-force disassembly of the packer section to discern a statistical distribution of the instructions within a section, and we can then use this data in whatever machine learning algorithm that is applicable.  The brute-force approach is subject to considerable statistical noise.
+
+A difference between this task and dynamic packer classification is that, due to the expense of constructing such things, new virtualization obfuscators appear with significantly less frequency than new packers.  In fact, I am aware of only a handful of these products.  Such packers can be bought cheaply on the open, legitimate market (as they are primarily intended to prevent software cracking, but have been misappropriated by malware authors), and therefore the cost of obtaining labelled data is extremely inexpensive.  Given the small number of classifications, the inertia of the space of families, and the ease of obtaining labelled data, this seems like it would best fit with a supervised classification approach.
+
+6  Countermeasures
+
+Every efficacious, defensive anti-viral technique spurs offensive repercussions; we do not expect that our methods will be immune from such consequences.  In this section, we enumerate several methods (existing and hypothetical) that malware authors could employ in evading our systems.
+
+6.1  Static:  Insertion of random or misleading data
+
+As stated in the material on virtualization obfuscation, static-based methods have inherent weaknesses in deciding what should be considered an "instruction".  These arise from undecidable mathematical problems in binary analysis, and also deliberately because of packer authors' use of self-modification.  Our approach to identifying virtualization obfuscators is hampered by our use of brute-force disassembly, considering every byte in the section as being the beginning of a potential instruction.  Packer authors could respond by increasing the amount of random data in the section, or by including blobs of data that have statistical frequencies similar to other, more legitimate, sources of executables.  It is not entirely clear to what extent the random data idea is meritorious, considering that random bytes will rarely decode to two-byte instructions, thereby making the existence of those instructions (generated by the packer) more noteworthy.
+
+6.2  Dynamic:  Runtime path selection
+
+Loops aside, we have assumed that packers will continue to operate as they do currently:  they mostly have a single obfuscator that they apply to large portions of their protector code, and make no attempt to disguise their statistical fingerprint.  In this subsection, we explore alternative constructions that might challenge this notion.
+
+6.2.1  Multiple obfuscators
+
+A packer could obfuscate several copies of itself with different engines and choose one of the copies at random at runtime.  This idea has several negative aspects for the packer author, mainly the expense of developing multiple obfuscators, the increase in the size of the packed executable, and the fact that it does not actually make manual unpacking by human analysts more difficult.  Nevertheless, a packer that followed this strategy might employ code such as the following:
+
+switch(rand() % NUM_OBFUSCATORS)
+{
+  case 0:  path0(); break;
+  case 1:  path1(); break;
+  /* ... */
+  case (NUM_OBFUSCATORS-1):  pathNm1(); break;
+}
+
+6.2.2  Randomization with a single obfuscator
+
+A related idea might be to influence instruction execution distribution characteristics randomly at runtime.  One could employ code such as the following, which would randomly skew the distribution of the nop instruction:
+
+rdtsc
+movzx eax, al
+jmp dword ptr table[eax*4]
+
+table dd offset case0, dd offset case1, ..., dd offset caseN
+
+case0:
+nop
+case1:
+nop
+case2:
+nop
+; ...
+case255:
+nop
+realcode:
+; continue
+
+6.3  Dynamic:  time-based attacks
+
+All dynamic malware analysis tools are subject to the limitation that they can only reason about properties of the executable that arise from code that they can force to execute.  A piece of malware can counteract this by including unreasonably long computations, or by using the operating system's timer facilities.  For example, a piece of malware could, in its first line of main(), set a timer that waited five minutes of wall clock time before performing its malicious action.  A naive dynamic analysis tool would then wait until its analysis timeout had expired, and conclude that the sample was benign.  These techniques are currently included more often in the underlying executable file rather than in the packer, and we are only concerned with packers, so their effects upon our system should be minimal.
+
+Brumley et al [4] propose a novel solution to a subset of this problem based upon online symbolic execution.  The value returned by timing functions is considered as a symbolic entity.  The system then uses symbolic execution to record the propagation of this value throughout the system, and every time a branch is reached whose relevant symbolic expression involves the symbolic timing variable, it queries a theorem prover to determine whether both sides of the branch are feasible.  In this fashion, the code relevant to timing comparisons can be located and exercised.  While this is an extremely interesting solution, it is unlikely to work in any sort of real-time system owing to the speed of symbolic execution and theorem proving, and it does not handle all forms of time-based subterfuge.
+
+6.4  Both:  Mimimorphism
+
+Mimimorphism [5] is a technique for constructing executables according to given probability distributions on the byte values, as well as certain metrics of semantic behaviors.  Clearly, as byte values and semantics are intertwined with instruction encodings, this poses a direct threat to the viability of our methods, and any method that attempts to fingerprint byte-value or semantic characteristics.  However, as the resulting program is not "packed" per se, we currently consider it to be outside of the scope of our methods.  Furthermore, I have to read this paper more extensively to see what the limits actually are.
+
+7  Bibliography
+
+[1] http://spth.vxheavens.com/EigenvirusesForMetamorphicVirusRecognition.pdf
+[2] http://www.usenix.org/event/woot09/tech/full_papers/rolles.pdf
+[3] http://iseclab.org/people/andrew/download/oakland09.pdf
+[4] http://bitblaze.cs.berkeley.edu/papers/botnet_book-2007.pdf
+[5] http://www.cs.wm.edu/~hnw/paper/ccs10.pdf

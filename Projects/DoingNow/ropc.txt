@@ -1,0 +1,6 @@
+Modification of the ROP compiler codebase
+-----------------------------------------
+
+Idea:
+
+Instead of having code that tests each property, note that each property can be expressed in a formula.

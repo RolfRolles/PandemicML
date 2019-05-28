@@ -1,0 +1,29 @@
+X86Constraints.cmo: X86TypeCheck.cmi X86Constraints.cmi
+X86Constraints.cmx: X86TypeCheck.cmx X86Constraints.cmi
+X86DecodeCanonical.cmo: X86InternalOperand.cmi X86Disasm.cmi \
+    X86DecodeCanonical.cmi
+X86DecodeCanonical.cmx: X86InternalOperand.cmx X86Disasm.cmx \
+    X86DecodeCanonical.cmi
+X86Disasm.cmo: X86Disasm.cmi
+X86Disasm.cmx: X86Disasm.cmi
+X86Encode.cmo: X86Util.cmi X86TypeCheck.cmi X86InternalOperand.cmi \
+    X86Disasm.cmi X86Constraints.cmi X86Encode.cmi
+X86Encode.cmx: X86Util.cmx X86TypeCheck.cmx X86InternalOperand.cmx \
+    X86Disasm.cmx X86Constraints.cmx X86Encode.cmi
+X86FeatureUtil.cmo: X86InternalOperand.cmi X86Encode.cmi
+X86FeatureUtil.cmx: X86InternalOperand.cmx X86Encode.cmx
+X86InternalOperand.cmo: X86InternalOperand.cmi
+X86InternalOperand.cmx: X86InternalOperand.cmi
+X86TypeCheck.cmo: X86InternalOperand.cmi X86TypeCheck.cmi
+X86TypeCheck.cmx: X86InternalOperand.cmx X86TypeCheck.cmi
+X86Util.cmo: X86Util.cmi
+X86Util.cmx: X86Util.cmi
+main.cmo: X86FeatureUtil.cmo X86DecodeCanonical.cmi
+main.cmx: X86FeatureUtil.cmx X86DecodeCanonical.cmx
+X86Constraints.cmi: X86TypeCheck.cmi
+X86DecodeCanonical.cmi: X86InternalOperand.cmi
+X86Disasm.cmi:
+X86Encode.cmi: X86InternalOperand.cmi X86Constraints.cmi
+X86InternalOperand.cmi:
+X86TypeCheck.cmi: X86InternalOperand.cmi
+X86Util.cmi:

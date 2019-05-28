@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="IR.html">
+<link rel="next" href="IRTypeCheck.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="IDA" rel="Chapter" href="IDA.html">
+<link title="IDAColor" rel="Chapter" href="IDAColor.html">
+<link title="IDAGUI" rel="Chapter" href="IDAGUI.html">
+<link title="IDAGraph" rel="Chapter" href="IDAGraph.html">
+<link title="IDAHotKey" rel="Chapter" href="IDAHotKey.html">
+<link title="IDATopLoop" rel="Chapter" href="IDATopLoop.html">
+<link title="JITRegion" rel="Chapter" href="JITRegion.html">
+<link title="Z3" rel="Chapter" href="Z3.html">
+<link title="IR" rel="Chapter" href="IR.html">
+<link title="IRLocalOpt" rel="Chapter" href="IRLocalOpt.html">
+<link title="IRTypeCheck" rel="Chapter" href="IRTypeCheck.html">
+<link title="PpIR" rel="Chapter" href="PpIR.html">
+<link title="X86" rel="Chapter" href="X86.html">
+<link title="X86CFG" rel="Chapter" href="X86CFG.html">
+<link title="X86CFGAssembler" rel="Chapter" href="X86CFGAssembler.html">
+<link title="X86Constraints" rel="Chapter" href="X86Constraints.html">
+<link title="X86Decode" rel="Chapter" href="X86Decode.html">
+<link title="X86Disasm" rel="Chapter" href="X86Disasm.html">
+<link title="X86Encode" rel="Chapter" href="X86Encode.html">
+<link title="X86InternalOperand" rel="Chapter" href="X86InternalOperand.html">
+<link title="X86LocalOpt" rel="Chapter" href="X86LocalOpt.html">
+<link title="X86TextualAssembler" rel="Chapter" href="X86TextualAssembler.html">
+<link title="X86TypeCheck" rel="Chapter" href="X86TypeCheck.html">
+<link title="X86Util" rel="Chapter" href="X86Util.html">
+<link title="X86Random" rel="Chapter" href="X86Random.html">
+<link title="X86ToIR" rel="Chapter" href="X86ToIR.html">
+<link title="ASMUtil" rel="Chapter" href="ASMUtil.html">
+<link title="LowLevel-old" rel="Chapter" href="LowLevel-old.html">
+<link title="StringUtil" rel="Chapter" href="StringUtil.html">
+<link title="Util" rel="Chapter" href="Util.html"><link title="Local optimization functions" rel="Section" href="#6_Localoptimizationfunctions">
+<title>IRLocalOpt</title>
+</head>
+<body>
+<div class="navbar"><a href="IR.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="IRTypeCheck.html">Next</a>
+</div>
+<center><h1>Module <a href="type_IRLocalOpt.html">IRLocalOpt</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> IRLocalOpt: <code class="code">sig</code> <a href="IRLocalOpt.html">..</a> <code class="code">end</code></pre>Local optimizations (and miscellaneous support functions) upon the IR.<br>
+<hr width="100%">
+<br>
+<span id="6_Localoptimizationfunctions"><h6>Local optimization functions</h6></span><br>
+<pre><span id="VALextract_uses"><span class="keyword">val</span> extract_uses</span> : <code class="type"><a href="IR.html#TYPEexpr">IR.expr</a> -> <a href="IR.html#TYPEvar">IR.var</a> list</code></pre><div class="info">
+Extract a list of variables from an expression.<br>
+</div>
+<pre><span id="VALreplace_var_with_expr"><span class="keyword">val</span> replace_var_with_expr</span> : <code class="type">(<a href="IR.html#TYPEvar">IR.var</a>, <a href="IR.html#TYPEexpr">IR.expr</a>) Hashtbl.t -> <a href="IR.html#TYPEexpr">IR.expr</a> -> <a href="IR.html#TYPEexpr">IR.expr</a></code></pre><div class="info">
+Given a hash table containing a <a href="IR.html#TYPEvar"><code class="code">IR.var</code></a> -&gt; <a href="IR.html#TYPEexpr"><code class="code">IR.expr</code></a> mapping, and an
+    expression, return an expression where all variables which have entries in
+    the map are substituted with the expression from the map.  Used for 
+    forward substitution.<br>
+</div>
+<pre><span id="VALreplace_var_with_var"><span class="keyword">val</span> replace_var_with_var</span> : <code class="type">(<a href="IR.html#TYPEvar">IR.var</a>, <a href="IR.html#TYPEvar">IR.var</a>) Hashtbl.t -> <a href="IR.html#TYPEexpr">IR.expr</a> -> <a href="IR.html#TYPEexpr">IR.expr</a></code></pre><div class="info">
+Same as previous function, except the map is from <a href="IR.html#TYPEvar"><code class="code">IR.var</code></a>s to <a href="IR.html#TYPEvar"><code class="code">IR.var</code></a>s,
+    and variables are replaced with their mapped associates.  Used for SSA.<br>
+</div>
+<pre><span id="VALreplace_instr_var_with_var"><span class="keyword">val</span> replace_instr_var_with_var</span> : <code class="type">(<a href="IR.html#TYPEvar">IR.var</a>, <a href="IR.html#TYPEvar">IR.var</a>) Hashtbl.t -> <a href="IR.html#TYPEinstr">IR.instr</a> -> <a href="IR.html#TYPEinstr">IR.instr</a></code></pre><div class="info">
+Same as previous function, except that it works on an instruction rather 
+    than an expression.  Used for SSA.<br>
+</div>
+<pre><span id="VALfold_expr_constants"><span class="keyword">val</span> fold_expr_constants</span> : <code class="type"><a href="IR.html#TYPEexpr">IR.expr</a> -> <a href="IR.html#TYPEexpr">IR.expr</a></code></pre><div class="info">
+Performs constant folding and algebraic reassociation.<br>
+</div>
+<pre><span id="VALlocal_dse"><span class="keyword">val</span> local_dse</span> : <code class="type"><a href="IR.html#TYPEinstr">IR.instr</a> list -> <a href="IR.html#TYPEinstr">IR.instr</a> list</code></pre><div class="info">
+Performs dead store elimination.  Currently makes the x86-specific 
+    assumption that the x86 registers, flags, and memory are live at the end
+    of the instruction list.  Does so in a particularly unsafe way with 
+    hard-coded (and somewhat obsolete) values.<br>
+</div>
+<pre><span id="VALlocal_opt"><span class="keyword">val</span> local_opt</span> : <code class="type"><a href="IR.html#TYPEinstr">IR.instr</a> list -> <a href="IR.html#TYPEinstr">IR.instr</a> list</code></pre><div class="info">
+Performs copy and constant propagation, and folding, on a list of 
+    instructions.<br>
+</div>
+<pre><span id="VALlocal_opt_state_out"><span class="keyword">val</span> local_opt_state_out</span> : <code class="type"><a href="IR.html#TYPEinstr">IR.instr</a> list -> (<a href="IR.html#TYPEvar">IR.var</a>, <a href="IR.html#TYPEexpr">IR.expr</a>) Hashtbl.t * <a href="IR.html#TYPEinstr">IR.instr</a> list</code></pre><div class="info">
+Performs copy and constant propagation, and folding, on a list of 
+    instructions.  Returns the state (a hash table mapping all values
+    to constant expressions).  Might need to revist this for the other 
+    maps that contain variable copy information (l2rmap, r2lmap).<br>
+</div>
+<pre><span id="VALlocal_opt_state_in"><span class="keyword">val</span> local_opt_state_in</span> : <code class="type">(<a href="IR.html#TYPEvar">IR.var</a>, <a href="IR.html#TYPEexpr">IR.expr</a>) Hashtbl.t -> <a href="IR.html#TYPEinstr">IR.instr</a> list -> <a href="IR.html#TYPEinstr">IR.instr</a> list</code></pre><div class="info">
+Performs copy and constant propagation, and folding, on a list of 
+    instructions.  Allows for iterative computation:  takes in the state 
+    (variable -&gt; constant expr hash table) as input, and it is modified 
+    by the analysis imperatively.  Might need to revist this for the other 
+    maps that contain variable copy information (l2rmap, r2lmap).<br>
+</div>
+<pre><span id="VALforward_substitute"><span class="keyword">val</span> forward_substitute</span> : <code class="type"><a href="IR.html#TYPEinstr">IR.instr</a> list -> <a href="IR.html#TYPEinstr">IR.instr</a> list</code></pre><div class="info">
+Substitutes expressions in for variables iteratively.<br>
+</div>
+</body></html>

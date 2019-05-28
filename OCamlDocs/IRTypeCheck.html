@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="IRLocalOpt.html">
+<link rel="next" href="PpIR.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="IDA" rel="Chapter" href="IDA.html">
+<link title="IDAColor" rel="Chapter" href="IDAColor.html">
+<link title="IDAGUI" rel="Chapter" href="IDAGUI.html">
+<link title="IDAGraph" rel="Chapter" href="IDAGraph.html">
+<link title="IDAHotKey" rel="Chapter" href="IDAHotKey.html">
+<link title="IDATopLoop" rel="Chapter" href="IDATopLoop.html">
+<link title="JITRegion" rel="Chapter" href="JITRegion.html">
+<link title="Z3" rel="Chapter" href="Z3.html">
+<link title="IR" rel="Chapter" href="IR.html">
+<link title="IRLocalOpt" rel="Chapter" href="IRLocalOpt.html">
+<link title="IRTypeCheck" rel="Chapter" href="IRTypeCheck.html">
+<link title="PpIR" rel="Chapter" href="PpIR.html">
+<link title="X86" rel="Chapter" href="X86.html">
+<link title="X86CFG" rel="Chapter" href="X86CFG.html">
+<link title="X86CFGAssembler" rel="Chapter" href="X86CFGAssembler.html">
+<link title="X86Constraints" rel="Chapter" href="X86Constraints.html">
+<link title="X86Decode" rel="Chapter" href="X86Decode.html">
+<link title="X86Disasm" rel="Chapter" href="X86Disasm.html">
+<link title="X86Encode" rel="Chapter" href="X86Encode.html">
+<link title="X86InternalOperand" rel="Chapter" href="X86InternalOperand.html">
+<link title="X86LocalOpt" rel="Chapter" href="X86LocalOpt.html">
+<link title="X86TextualAssembler" rel="Chapter" href="X86TextualAssembler.html">
+<link title="X86TypeCheck" rel="Chapter" href="X86TypeCheck.html">
+<link title="X86Util" rel="Chapter" href="X86Util.html">
+<link title="X86Random" rel="Chapter" href="X86Random.html">
+<link title="X86ToIR" rel="Chapter" href="X86ToIR.html">
+<link title="ASMUtil" rel="Chapter" href="ASMUtil.html">
+<link title="LowLevel-old" rel="Chapter" href="LowLevel-old.html">
+<link title="StringUtil" rel="Chapter" href="StringUtil.html">
+<link title="Util" rel="Chapter" href="Util.html"><link title="Exceptions" rel="Section" href="#6_Exceptions">
+<link title="Type-checking functions" rel="Section" href="#6_Typecheckingfunctions">
+<link title="Type-related helper functions" rel="Section" href="#6_Typerelatedhelperfunctions">
+<title>IRTypeCheck</title>
+</head>
+<body>
+<div class="navbar"><a href="IRLocalOpt.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="PpIR.html">Next</a>
+</div>
+<center><h1>Module <a href="type_IRTypeCheck.html">IRTypeCheck</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> IRTypeCheck: <code class="code">sig</code> <a href="IRTypeCheck.html">..</a> <code class="code">end</code></pre>Support for interrogating the type of IR terms, and ensuring the semantic 
+    consistency of instructions.<br>
+<hr width="100%">
+<br>
+<span id="6_Exceptions"><h6>Exceptions</h6></span><br>
+<pre><span id="EXCEPTIONTypeException"><span class="keyword">exception</span> TypeException</span> <span class="keyword">of</span> <code class="type">string</code></pre>
+<div class="info">
+Raised by most of the functions in this module upon failure.<br>
+</div>
+<br>
+<span id="6_Typecheckingfunctions"><h6>Type-checking functions</h6></span><br>
+<pre><span id="VALtypecheck_expr"><span class="keyword">val</span> typecheck_expr</span> : <code class="type"><a href="IR.html#TYPEexpr">IR.expr</a> -> <a href="IR.html#TYPEvar">IR.var</a></code></pre><div class="info">
+Typecheck an expressions.  Returns a variable "archetype", i.e., if we 
+    were to replace the expression with a variable, what would the type of the
+    variable need to be?  Raise a <a href="IRTypeCheck.html#EXCEPTIONTypeException"><code class="code">IRTypeCheck.TypeException</code></a> upon failure.<br>
+</div>
+<pre><span id="VALtypecheck_instr"><span class="keyword">val</span> typecheck_instr</span> : <code class="type"><a href="IR.html#TYPEinstr">IR.instr</a> -> unit</code></pre><div class="info">
+Typecheck an instruction.  Returns nothing; a <a href="IRTypeCheck.html#EXCEPTIONTypeException"><code class="code">IRTypeCheck.TypeException</code></a> is raised
+    upon failure.<br>
+</div>
+<br>
+<span id="6_Typerelatedhelperfunctions"><h6>Type-related helper functions</h6></span><br>
+<pre><span id="VALis_integer_type"><span class="keyword">val</span> is_integer_type</span> : <code class="type"><a href="IR.html#TYPEvar">IR.var</a> -> bool</code></pre><div class="info">
+Is the variable an integer?<br>
+</div>
+<pre><span id="VALis_memory_type"><span class="keyword">val</span> is_memory_type</span> : <code class="type"><a href="IR.html#TYPEvar">IR.var</a> -> bool</code></pre><div class="info">
+Is the variable a memory?<br>
+</div>
+<pre><span id="VALtype_of_integer_type"><span class="keyword">val</span> type_of_integer_type</span> : <code class="type"><a href="IR.html#TYPEvar">IR.var</a> -> <a href="IR.html#TYPEtypereg">IR.typereg</a></code></pre><div class="info">
+Returns the <a href="IR.html#TYPEtypereg"><code class="code">IR.typereg</code></a> type of a given integer, or raises a 
+    <a href="IRTypeCheck.html#EXCEPTIONTypeException"><code class="code">IRTypeCheck.TypeException</code></a>.<br>
+</div>
+<pre><span id="VALsize_of_integer_type"><span class="keyword">val</span> size_of_integer_type</span> : <code class="type"><a href="IR.html#TYPEvar">IR.var</a> -> int</code></pre><div class="info">
+Returns the integer size (in bits) of a given integer, or raises a 
+    <a href="IRTypeCheck.html#EXCEPTIONTypeException"><code class="code">IRTypeCheck.TypeException</code></a>.<br>
+</div>
+<pre><span id="VALcompare_types"><span class="keyword">val</span> compare_types</span> : <code class="type"><a href="IR.html#TYPEvar">IR.var</a> -> <a href="IR.html#TYPEvar">IR.var</a> -> bool</code></pre><div class="info">
+Memories match memories always (revisit for endianness?), integers match
+    integers if their sizes match.  Raise a <a href="IRTypeCheck.html#EXCEPTIONTypeException"><code class="code">IRTypeCheck.TypeException</code></a> upon comparing an
+    integer with a memory.<br>
+</div>
+<pre><span id="VALendianness_of_memory_type"><span class="keyword">val</span> endianness_of_memory_type</span> : <code class="type"><a href="IR.html#TYPEvar">IR.var</a> -> <a href="IR.html#TYPEtypeendian">IR.typeendian</a></code></pre><div class="info">
+Returns the endianness of a given memory, or raises a <a href="IRTypeCheck.html#EXCEPTIONTypeException"><code class="code">IRTypeCheck.TypeException</code></a>.<br>
+</div>
+</body></html>

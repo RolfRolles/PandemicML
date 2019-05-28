@@ -1,0 +1,18 @@
+IDA.cmo: IDA.cmi
+IDA.cmx: IDA.cmi
+IDAColor.cmo: IDAColor.cmi
+IDAColor.cmx: IDAColor.cmi
+IDAGUI.cmo: IDAGUI.cmi
+IDAGUI.cmx: IDAGUI.cmi
+IDAGraph.cmo: IDAGraph.cmi
+IDAGraph.cmx: IDAGraph.cmi
+IDAHotKey.cmo: IDA.cmi IDAHotKey.cmi
+IDAHotKey.cmx: IDA.cmx IDAHotKey.cmi
+IDATopLoop.cmo: IDATopLoop.cmi
+IDATopLoop.cmx: IDATopLoop.cmi
+IDA.cmi:
+IDAColor.cmi:
+IDAGUI.cmi:
+IDAGraph.cmi:
+IDAHotKey.cmi:
+IDATopLoop.cmi:

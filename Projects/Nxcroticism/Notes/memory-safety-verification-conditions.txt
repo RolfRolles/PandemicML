@@ -1,0 +1,155 @@
+Let's step back from the specifics here and describe what is happening that is 
+wrong, and how we plan to fix it.
+
+Executive summary of problem:  writes to unconstrained addresses impede the 
+verification of other properties, including reads but also other writes.
+
+Detailed summary of problem:  if a write is assumed to go "anywhere", i.e.
+reg+d32 where reg is not initially constrained, then the following detrimental
+behaviors are experienced during verification:
+
+1)  All but the last write are (rightly) assumed by the theorem prover that
+    the destination address might overlap with the last write, and therefore
+    that the initial writes cannot be verified because of this pathological
+    case.
+    
+2)  All reads subsequent to any write are not able to be verified, for the
+    same reason that those memory locations might have been clobbered by
+    the prior writes.
+
+Executive summary of solution:  use memory fencing to assert that the writes
+don't overlap each other, and that the writes do not overlap the reads.
+
+Detailed summary of solution:
+
+We need to assert that each potential write candidate does not alias the same
+location.  Given the triplets of potential write locations, we convert this
+into a set containing all possible accessed locations, specified in [reg+disp]
+form and accounting for the sizes of the writes.  Now, we iterate over this 
+set in an O(N^2) fashion and assert that these entities are distinct.  As a 
+small optimization, we do not assert that displacements off the same register
+are distinct, since this fact is "obvious" given that they are different 
+displacements off of the same base register and therefore cannot be equal.
+This is the "distinction assetion".  It is passed as a parameter to the 
+functions that verify memory write behaviors, and it is asserted conjunctively
+with the functionality-related verification condition.
+
+Now I also need to take this information into account during the verification
+of the reads.  How exactly I am going to do that is a bit less clear.
+
+Perhaps I should assert those same constraints during the read verifications?
+Well, I'm going to need something else.  I would like to assert distinction
+between:
+
+A) Locations that are guaranteed to be written
+B) Candidate read locations
+
+But I have to think more about how to actually do that.
+
+First idea that comes to mind:
+
+Assert that all candidate read locations are distinct from the write locations.
+Once again, do this by enumerating the candidate read locations and asserting
+their distinction from the set of reads.
+
+I think I can do that easily by modifying the existing distinction assertion
+code.  Ins
+
+
+
+
+
+
+
+
+
+
+let verify_write_behaviors verify ssa_tbl size s_write_reg_t =
+  VarVarInt32Set.filter 
+   (fun (vsrc,vreg,d32) -> verify (verify_write_reg ssa_tbl vreg d32 vsrc size))
+   (select_member size s_write_reg_t)
+
+let verify_write_behaviors verify ssa_tbl s_write_reg_t =
+  triplicate (verify_write_behaviors verify ssa_tbl) s_write_reg_t
+
+let fold_triple f_outer f_inner acc t =
+  
+
+let acc = fold_triple VarVarInt32Set.fold (fun (vsrc,vreg,d32) acc -> (vreg,d32)::acc) [] s_write_reg_t in
+
+
+
+
+
+In our system, any write is of the form [reg32+disp].
+In the case where there is one write, the write behaviors ought to verify properly.
+In the case where there are two write based off of different registers, the theorem
+prover must consider the case that the registers are situated in such a way that
+their displaced addresses coincide.
+
+In other words, we have a failure to verify when:
+
+Write of size s1 to reg1+d1, s2 to reg2+d2
+reg1+d1 == reg2+d2
+reg1+d1 == reg2+d2+1 if s2 >= 16
+reg1+d1 == reg2+d2+2 if s2 >= 32
+reg1+d1 == reg2+d2+3 if s2 >= 32
+
+reg2+d2 == reg1+d1
+reg2+d2 == reg1+d1+1 if s1 >= 16
+reg2+d2 == reg1+d1+2 if s1 >= 32
+reg2+d2 == reg1+d1+3 if s1 >= 32
+
+Setup of the formula:
+
+(address equalities are all false) => (ordinary write formula)
+
+I.e.,
+
+!(address equalities are all false) \/ (ordinary write formula)
+
+We need something that comes up unsatisfiable if the writes are correct.
+The above formula is satisfiable if any address equalities are true.
+This is not what we want.
+
+Negate it?
+
+(address equalities are all false) /\ !(ordinary write formula) 
+(aef) /\ !(owf)
+
+!((aef) /\ !(owf)) =
+(!aef \/ owf)
+
+aef => owf
+
+
+
+
+
+If THAT is unsatisfiable, then we win.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Idea on how to proceed:
+
+s_write_reg_t => s_write_reg_stack_t and s_write_reg_nonstack_t.
+
+Fold over the nonstack writes.
+Assert that each one is distinct from the other, and also distinct from the stack.
+Prove them.
+
+

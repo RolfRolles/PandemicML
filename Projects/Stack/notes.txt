@@ -1,0 +1,10 @@
+#1:  create control flow graph
+#2:  assign "in" and "out" variables to all vertices
+#3:  constrain each output to be equal to the input for all successors
+#4:  constrain the input to be 0, and the output to be zero.  Silvio asked, what about stdcall functions (e.g. retn xx) -- shouldn't the output be greater than zero in this case?  Ilfak did not answer clearly -- he merely asserted that Silvio was incorrect -- but I think I see what he's getting at.  We can just ignore the xx in the retn xx.
+#5:  if the block modifies the stack in a fixed way, e.g. it contains pushes but no unknown calls, then we can generate constraints like outX - inX = 4.  If it does contain unknown calls, then we can generate constraints such as outX - inX <= push_amt.
+#6:  "set low bounds for inner variables" (i.v.s are those in/out variables not into the entry or out of a returning vertex).  It doesn't elaborate on what these low bounds are, although it does indicate that they are mandatory.
+
+Given this description of a linear programming problem, there are an infinite number of solutions.  Therefore, Ilfak poses an optimization criteria:  minimize the sum of the variables.  This is "not completely correct, but gives nice results in practice".  "Probably it works well because compilers try to consume as little stack as possible and do not issue meaningless push instructions."
+
+OK.  So there are a few unclear details here:  what should these lower bounds be, and why exactly does the optimization problem as posed work well.

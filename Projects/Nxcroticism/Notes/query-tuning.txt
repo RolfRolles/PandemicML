@@ -1,0 +1,345 @@
+Queries with behavior that are perhaps non-intuitive:
+
+Legend:
+
+BUGS:
+
+[BFN] binop candidate false negative -- REMEDIATED ALL!
+[WFN] write candidate false negative -- REMEDIATED ALL!
+[BFP] binop candidate false positive
+
+MANDATORY IMPROVEMENTS:
+
+[RBAlias] read behaviors are not counted because writes could alias the stack
+
+NICE IMPROVEMENTS:
+
+[B0FP] binop candidate false positives due to a value being zero -- MANY ELIMINATED
+[WBDEP] memory write binop where the address depends on the value -- REMEDIATED ALL!
+[UFN] unop candidate false negative (there are no unops at the moment)
+[WCFN] write constant candidate false negative (this category doesn't exist)
+
+
+
+
+add byte ptr ds:[eax], al
+add esp, 00000018h
+pop edi
+pop esi
+pop ebx
+ret
+
+edi/esi/ebx RBAlias
+
+add byte ptr ds:[eax], al
+add byte ptr ds:[eax], al
+add esp, 00000018h
+pop edi
+pop esi
+pop ebx
+ret
+
+edi/esi/ebx RBAlias
+BFP: [EAX.pre+0x0] += AL
+
+add byte ptr ds:[ebx+5E5F18C4], al
+pop ebx
+ret
+
+RBAlias ebx
+
+add byte ptr ds:[eax], al
+add byte ptr ds:[ebx+5E5F18C4], al
+pop ebx
+ret
+
+RBAlias ebx
+
+or byte ptr ds:[ecx], al
+pop ebp
+pop ebx
+ret
+
+RBAlias ebp/ebx
+
+aaa
+or byte ptr ds:[ecx], al
+pop ebp
+pop ebx
+ret
+
+RBAlias
+
+inc ebx
+aaa
+or byte ptr ds:[ecx], al
+pop ebp
+pop ebx
+ret
+
+RBAlias
+
+inc dword ptr ds:[ebx+37439C25]
+or byte ptr ds:[eax], al
+ret
+
+UFN
+
+mov dword ptr ss:[esp], eax
+ret
+Binop behaviors:
+Missed BINOP, investigate
+Missed BINOP, investigate
+[ESP.pre+0x0] |= EAX
+[ESP.pre+0x0] &= EAX
+
+BFP
+
+adc dword ptr ss:[ebp+FFFFFFEE], esi
+pop ebx
+mov byte ptr ds:[eax], dl
+ret
+
+RBAlias
+
+mov byte ptr ds:[eax], 00h
+ret
+
+WCFN
+
+add byte ptr ds:[eax], al
+pop edi
+pop esi
+pop ebx
+pop ebp
+ret
+
+RBAlias
+
+aaa
+or byte ptr ds:[ecx+FFFFFFE8], dl
+cmp eax, 5F000002h
+pop esi
+pop ebx
+pop ebp
+ret
+
+RBAlias
+
+and dh, byte ptr ds:[edi]
+or byte ptr ds:[ecx+FFFFFFE8], dl
+cmp eax, 5F000002h
+pop esi
+pop ebx
+pop ebp
+ret
+
+RBAlias
+
+add byte ptr ds:[eax+FFFFFFAB], ch
+and dh, byte ptr ds:[edi]
+or byte ptr ds:[ecx+FFFFFFE8], dl
+cmp eax, 5F000002h
+pop esi
+pop ebx
+pop ebp
+ret
+
+RBAlias
+
+add byte ptr ds:[edi+0000005E], bl
+pop ebx
+pop ebp
+ret
+
+RBAlias
+
+add al, byte ptr ds:[eax]
+add byte ptr ds:[edi+0000005E], bl
+pop ebx
+pop ebp
+ret
+
+cmp eax, C0000005h
+setz cl
+mov eax, ecx
+ret
+
+B0FP
+
+xor ecx, ecx
+cmp eax, C0000005h
+setz cl
+mov eax, ecx
+ret
+
+B0FP
+
+mov eax, dword ptr ds:[eax]
+xor ecx, ecx
+cmp eax, C0000005h
+setz cl
+mov eax, ecx
+ret
+
+B0FP
+
+mov eax, dword ptr ds:[eax]
+mov eax, dword ptr ds:[eax]
+xor ecx, ecx
+cmp eax, C0000005h
+setz cl
+mov eax, ecx
+ret
+
+B0FP
+
+mov eax, dword ptr ss:[ebp+FFFFFFEC]
+mov eax, dword ptr ds:[eax]
+mov eax, dword ptr ds:[eax]
+xor ecx, ecx
+cmp eax, C0000005h
+setz cl
+mov eax, ecx
+ret
+
+B0FP
+
+xor ecx, ecx
+cmp word ptr ds:[eax+00000018], 010Bh
+setz cl
+mov eax, ecx
+ret
+
+B0FP
+
+add byte ptr ss:[ebp+FFFFFFF0], dh
+xor ecx, ecx
+cmp word ptr ds:[eax+00000018], 010Bh
+setz cl
+mov eax, ecx
+ret
+
+B0FP
+
+lock xor ecx, ecx
+cmp word ptr ds:[eax+00000018], 010Bh
+setz cl
+mov eax, ecx
+ret
+
+B0FP
+
+dec dword ptr ds:[ebx+5F182444]
+pop esi
+pop ebp
+pop ebx
+add esp, 00000014h
+ret
+
+UFN
+
+push eax
+pop eax
+pop ecx
+pop ebp
+pop ecx
+pop ebx
+ret 0004h
+Binop behaviors:
+Missed BINOP, investigate
+Missed BINOP, investigate
+[ESP.pre+0xfffffffc] |= EAX
+[ESP.pre+0xfffffffc] &= EAX
+
+BFP
+
+mov dword ptr ds:[ebx+0000000C], ebp
+push ebp
+push ecx
+push eax
+pop eax
+pop ecx
+pop ebp
+pop ecx
+pop ebx
+ret 0004h
+
+BFP
+RBAlias Verified in 0.022000: load(mem29269,EBX+const(TypeReg_32,0xC),TypeReg_32)!=EBP was false
+
+mov dword ptr ds:[ebx+00000004], eax
+mov dword ptr ds:[ebx+0000000C], ebp
+push ebp
+push ecx
+push eax
+pop eax
+pop ecx
+pop ebp
+pop ecx
+pop ebx
+ret 0004h
+
+BFP
+RBAlias
+
+mov dword ptr ds:[ebx+00000008], ecx
+mov dword ptr ds:[ebx+00000004], eax
+mov dword ptr ds:[ebx+0000000C], ebp
+push ebp
+push ecx
+push eax
+pop eax
+pop ecx
+pop ebp
+pop ecx
+pop ebx
+ret 0004h
+
+BFP
+RBAlias
+
+and al, 0Ch
+mov dword ptr ds:[ebx+00000008], ecx
+mov dword ptr ds:[ebx+00000004], eax
+mov dword ptr ds:[ebx+0000000C], ebp
+push ebp
+push ecx
+push eax
+pop eax
+pop ecx
+pop ebp
+pop ecx
+pop ebx
+ret 0004h
+
+BFP
+RBAlias
+
+or al, 55h
+push ecx
+push eax
+pop eax
+pop ecx
+pop ebp
+pop ecx
+pop ebx
+ret 0004h
+
+BFP
+RBAlias
+
+or byte ptr ds:[ecx+6B890443], cl
+or al, 55h
+push ecx
+push eax
+pop eax
+pop ecx
+pop ebp
+pop ecx
+pop ebx
+ret 0004h
+
+BFP
+RBAlias
+

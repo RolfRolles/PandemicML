@@ -1,0 +1,6 @@
+Microsoft (R) COFF/PE Dumper Version 9.00.30729.01
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+Dump of file c:paframeworktestvmstuffblob1.vmp.exe
+LINK : fatal error LNK1181: cannot open input file 'c:paframeworktestvmstuffblob1.vmp.exe'

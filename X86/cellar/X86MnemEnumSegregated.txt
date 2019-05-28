@@ -1,0 +1,748 @@
+(* 5.1 General-Purpose Instructions *)
+(* 5.1.1 Data Transfer Instructions *)
+| Mov
+| Cmova 
+| Cmovae
+| Cmovb 
+| Cmovbe
+| Cmovg 
+| Cmovge
+| Cmovl 
+| Cmovle
+| Cmovno
+| Cmovnp
+| Cmovns
+| Cmovnz
+| Cmovo 
+| Cmovp 
+| Cmovs 
+| Cmovz 
+| Xchg
+| Bswap
+| Xadd
+| Cmpxchg
+| Cmpxchg8b
+| Push
+| Pop
+| Pushad
+| Pushaw
+| Popad
+| Popaw
+| Cwd
+| Cdq
+| Cbw
+| Cwde
+| Movsx
+| Movzx
+
+(* 5.1.2 Binary Arithmetic Instructions *)
+| Adc
+| Add 
+| Sub
+| Sbb
+| Imul
+| Mul
+| Idiv
+| Div
+| Inc
+| Dec
+| Cmp
+| Neg
+
+(* 5.1.3 Decimal Arithmetic Instructions *)
+| Daa
+| Das
+| Aaa
+| Aas
+| Aam
+| Aad
+
+(* 5.1.4 Logical Instructions *)
+| And
+| Or
+| Xor
+| Not
+
+(* 5.1.5 Shift and Rotate Instructions *)
+| Sar
+| Shr
+| Sal
+| Shl
+| Shrd
+| Shld
+| Ror
+| Rol
+| Rcr
+| Rcl
+
+(* 5.1.6 Bit and Byte Instructions *)
+| Bt
+| Bts
+| Btr
+| Btc
+| Bsf
+| Bsr
+| Seta 
+| Setae
+| Setb 
+| Setbe
+| Setg 
+| Setge
+| Setl 
+| Setle
+| Setno
+| Setnp
+| Setns
+| Setnz
+| Seto 
+| Setp 
+| Sets 
+| Setz 
+| Test
+
+(* 5.1.7 Control Transfer Instructions *)
+| Jmp
+| JmpF
+| Ja 
+| Jae
+| Jb 
+| Jbe
+| Jg 
+| Jge
+| Jl 
+| Jle
+| Jno
+| Jnp
+| Jns
+| Jnz
+| Jo 
+| Jp 
+| Js 
+| Jz 
+| Jcxz
+| Jecxz
+| Loop
+| Loopnz
+| Loopz
+| Call
+| CallF
+| Ret
+| Retf
+| Iretd
+| Iretw
+| Int
+| Into
+| Bound
+
+(* 5.1.8 String Instructions *)
+| Movsb
+| Movsw
+| Movsd
+| Cmpsb
+| Cmpsw
+| Cmpsd
+| Scasb
+| Scasw
+| Scasd
+| Lodsb
+| Lodsw
+| Lodsd
+| Stosb
+| Stosw
+| Stosd
+
+(* 5.1.9 I/O Instructions *)
+| In
+| Out
+| Insb
+| Insw
+| Insd
+| Outsb
+| Outsw
+| Outsd
+
+(* 5.1.10 Enter and Leave Instructions *)
+| Enter
+| Leave
+
+(* 5.1.11 Flag Control (EFLAG) Instructions *)
+| Stc
+| Clc
+| Cmc
+| Cld
+| Std
+| Lahf
+| Sahf
+| Pushfd
+| Pushfw
+| Popfd
+| Popfw
+| Sti
+| Cli
+
+(* 5.1.12 Segment Register Instructions *)
+| Lds
+| Les
+| Lfs
+| Lgs
+| Lss
+
+(* 5.1.13 Miscellaneous Instructions *)
+| Lea
+| Nop
+| Ud2
+| Xlat
+| Cpuid
+
+(* 5.2 x87 FPU Instructions *)
+(* 5.2.1 x87 FPU Data Transfer Instructions *)
+| Fld
+| Fst
+| Fstp
+| Fild
+| Fist
+| Fistp
+| Fbld
+| Fbstp
+| Fxch
+| Fcmove
+| Fcmovne
+| Fcmovb
+| Fcmovbe
+| Fcmovnb
+| Fcmovnbe
+| Fcmovu
+| Fcmovnu
+
+(* 5.2.2 x87 FPU Basic Arithmetic Instructions *)
+| Fadd
+| Faddp
+| Fiadd
+| Fsub
+| Fsubp
+| Fisub
+| Fsubr
+| Fsubrp
+| Fisubr
+| Fmul
+| Fmulp
+| Fimul
+| Fdiv
+| Fdivp
+| Fidiv
+| Fdivr
+| Fdivrp
+| Fidivr
+| Fprem
+| Fprem1
+| Fabs
+| Fchs
+| Frndint
+| Fscale
+| Fsqrt
+| Fxtract
+
+(* 5.2.3 x87 FPU Comparison Instructions *)
+| Fcom
+| Fcomp
+| Fcompp
+| Fucom
+| Fucomp
+| Fucompp
+| Ficom
+| Ficomp
+| Fcomi
+| Fucomi
+| Fcomip
+| Fucomip
+| Ftst
+| Fxam
+
+(* 5.2.4 x86 FPU Transcendental Instructions *)
+| Fsin
+| Fcos
+| Fsincos
+| Fptan
+| Fpatan
+| F2xm1
+| Fyl2x
+| Fyl2xp1
+
+(* 5.2.5 x87 FPU Load Constants Instructions *)
+| Fld1
+| Fldz
+| Fldpi
+| Fldl2e
+| Fldln2
+| Fldl2t
+| Fldlg2
+
+(* 5.2.6 x87 FPU Control Instructions *)
+| Fincstp
+| Fdecstp
+| Ffree
+| Finit  (* | Fninit  when paired with Wait *)
+| Fclex  (* | Fnclex  when paired with Wait *)
+| Fstcw  (* | Fnstcw  when paired with Wait *)
+| Fldcw
+| Fstenv (* | Fnstenv when paired with Wait *)
+| Fldenv
+| Fsave  (* | Fnsave  when paired with Wait *)
+| Frstor
+| Fstsw  (* | Fnstsw  when paired with Wait *)
+| Wait
+| Fnop
+
+(* 5.3 X87 FPU And SIMD State Management Instructions *)
+| Fxsave
+| Fxrstor
+
+(* 5.4 MMX Instructions *)
+(* 5.4.1 MMX Data Transfer Instructions *)
+| Movd
+| Movq
+
+(* 5.4.2 MMX Conversion Instructions *)
+| Packsswb 
+| Packssdw
+| Packuswb 
+| Punpckhbw
+| Punpckhwd
+| Punpckhdq
+| Punpcklbw
+| Punpcklwd
+| Punpckldq
+
+(* 5.4.3 MMX Packed Arithmetic Instructions *)
+| Paddb
+| Paddw
+| Paddd
+| Paddsb
+| Paddsw
+| Paddusb
+| Paddusw
+| Psubb
+| Psubw
+| Psubd
+| Psubsb
+| Psubsw
+| Psubusb
+| Psubusw
+| Pmulhw
+| Pmullw
+| Pmaddwd
+
+(* 5.4.4 MMX Comparison Instructions *)
+| Pcmpeqb
+| Pcmpeqw
+| Pcmpeqd
+| Pcmpgtb  
+| Pcmpgtw  
+| Pcmpgtd  
+
+(* 5.4.5 MMX Logical Instructions *)
+| Pand
+| Pandn
+| Por
+| Pxor
+
+(* 5.4.6 MMX Shift and Rotate Instructions *)
+| Psllw
+| Pslld
+| Psllq
+| Psrlw
+| Psrld
+| Psrlq
+| Psraw
+| Psrad
+
+(* 5.4.7 MMX State Management Instructions *)
+| Emms
+
+(* 5.5 SSE Instructions *)
+(* 5.5.1 SSE SIMD Single-Precision Floating-Point Instructions *)
+(* 5.5.1.1 SSE Data Transfer Instructions *)
+| Movaps
+| Movups
+| Movhps
+| Movhlps
+| Movlps
+| Movlhps
+| Movmskps
+| Movss 
+
+(* 5.5.1.2 SSE Packed Arithmetic Instructions *)
+| Addps
+| Addss
+| Subps
+| Subss
+| Mulps
+| Mulss
+| Divps
+| Divss
+| Rcpps
+| Rcpss
+| Sqrtps
+| Sqrtss
+| Rsqrtps
+| Rsqrtss
+| Maxps
+| Maxss
+| Minps
+| Minss
+
+(* 5.5.1.3 SSE Comparison Instructions *)
+| Cmpps
+| Cmpss
+| Comiss
+| Ucomiss
+
+(* 5.5.1.4 SSE Logical Instructions *)
+| Andps
+| Andnps
+| Orps
+| Xorps
+
+(* 5.5.1.5 SSE Shuffle and Unpack Instructions *)
+| Shufps
+| Unpckhps
+| Unpcklps
+
+(* 5.5.1.6 SSE Conversion Instructions *)
+| Cvtpi2ps
+| Cvtsi2ss
+| Cvtps2pi
+| Cvttps2pi
+| Cvtss2si
+| Cvttss2si
+
+(* 5.5.2 SSE MXCSR State Management Instructions *)
+| Ldmxcsr
+| Stmxcsr       
+
+(* 5.5.3 SSE 64-Bit SIMD Integer Instructions *)
+| Pavgb
+| Pavgw
+| Pextrw
+| Pmaxub
+| Pmaxsw
+| Pminub
+| Pminsw
+| Pmovmskb
+| Pmulhuw
+| Psadbw
+| Pshufw
+
+(* 5.5.4 SSE Cacheability Control, Prefetch, and Instruction Ordering Instructions *)
+| Maskmovq
+| Movntq
+| Movntps
+| Prefetchnta
+| Prefetcht0
+| Prefetcht1
+| Prefetcht2
+| Sfence
+
+(* 5.6 SSE2 Instructions *)
+(* 5.6.1 SSE2 Packed and Scalar Double-Precision Floating-Point Instructions *)
+(* 5.6.1.1 SSE2 Data Movement Instructions *)
+| Movapd
+| Movupd
+| Movhpd
+| Movlpd
+| Movmskpd
+(* | Movsd -- overloaded mnemonic; see string instructions *)
+
+(* 5.6.1.2 SSE2 Packed Arithmetic Instructions *)
+| Addpd
+| Addsd
+| Subpd
+| Subsd
+| Mulpd
+| Mulsd
+| Divpd
+| Divsd
+| Sqrtpd
+| Sqrtsd
+| Maxpd
+| Maxsd
+| Minpd
+| Minsd
+
+(* 5.6.1.3 SSE2 Logical Instructions *)
+| Andpd
+| Andnpd
+| Orpd
+| Xorpd
+
+(* 5.6.1.4 SSE2 Compare Instructions *)
+| Cmppd
+(* | Cmpsd -- overloaded mnemonic; see string instructions *)
+| Comisd
+| Ucomisd
+
+(* 5.6.1.5 SSE2 Shuffle and Unpack Instructions *)
+| Shufpd
+| Unpckhpd
+| Unpcklpd
+
+(* 5.6.1.6 SSE2 Conversion Instructions *)
+| Cvtpd2pi
+| Cvttpd2pi
+| Cvtpi2pd
+| Cvtpd2dq
+| Cvttpd2dq
+| Cvtdq2pd
+| Cvtps2pd
+| Cvtpd2ps
+| Cvtss2sd
+| Cvtsd2ss
+| Cvtsd2si
+| Cvttsd2si
+| Cvtsi2sd
+
+(* 5.6.2 SSE2 Packed Single-Precision Floating-Point Instructions *)
+| Cvtdq2ps
+| Cvtps2dq
+| Cvttps2dq
+
+(* 5.6.3 SSE2 128-Bit SIMD Integer Instructions *)
+| Movdqa
+| Movdqu
+| Movdq2q
+| Movq2dq
+| Pmuludq
+| Paddq
+| Psubq
+| Pshuflw
+| Pshufhw
+| Pshufd
+| Pslldq
+| Psrldq
+| Punpckhqdq
+| Punpcklqdq
+
+(* 5.6.4 SSE2 Cacheability Control and Ordering Instructions *)
+| Clfush
+| Lfence
+| Mfence
+| Pause
+| Maskmovdqu
+| Movntpd
+| Movntdq
+| Movnti
+
+(* 5.7 SSE3 Instructions *)
+(* 5.7.1 SSE3 x87-FP Integer Conversion Instruction *)
+| Fisttp
+
+(* 5.7.2 SSE3 Specialized 128-bit Unaligned Data Load Instruction *)
+| Lddqu
+
+(* 5.7.3 SSE3 SIMD Floating-Point Packed Add/Sub Instructions *)
+| Addsubps
+| Addsubpd
+
+(* 5.7.4 SSE3 SIMD Floating-Point Horizontal Add/Sub Instructions *)
+| Haddps
+| Hsubps
+| Haddpd
+| Hsubpd
+
+(* 5.7.5 SSE3 SIMD Floating-Point LOAD/MOVE/DUPLICATE Instructions *)
+| Movshdup
+| Movsldup
+| Movddup
+
+(* 5.7.6 SSE3 Agent Synchronization Instructions *)
+| Monitor
+| Mwait
+
+(* 5.8 Supplemental Streaming SIMD Extensions 3 (SSSE3) Instructions *)
+(* 5.8.1 Horizontal Addition/Subtraction *)
+| Phaddw
+| Phaddsw
+| Phaddd
+| Phsubw
+| Phsubsw
+| Phsubd
+
+(* 5.8.2 Packed Absolute Values *)
+| Pabsb
+| Pabsw
+| Pabsd
+
+(* 5.8.3 Multiply and Add Packed Signed and Unsigned Bytes *)
+| Pmaddubsw
+
+(* 5.8.4 Packed Multiply High with Round and Scale *)
+| Pmulhrsw
+
+(* 5.8.5 Packed Shuffle Bytes *)
+| Pshufb
+
+(* 5.8.6 Packed Sign *)
+| Psignb
+| Psignw
+| Psignd
+
+(* 5.8.7 Packed Align Right *)
+| Palignr
+
+(* 5.9 SSE4 Instructions -- heading only *)
+
+(* 5.10 SSE4.1 Instructions *)
+(* 5.10.1 Dword Multiply Instructions *)
+| Pmulld
+| Pmuldq
+
+(* 5.10.2 Floating-Point Dot Product Instruction *)
+| Dppd
+| Dpps
+
+(* 5.10.3 Streaming Load Hint Instruction *)
+| Movntdqa
+
+(* 5.10.4 Packed Blending Instructions *)
+| Blendpd
+| Blendps
+| Blendvpd
+| Blendvps
+| Pblendvb
+| Pblendw
+
+(* 5.10.5 Packed Integer MIN/MAX Instructions *)
+| Pminuw
+| Pminud
+| Pminsb
+| Pminsd
+| Pmaxuw
+| Pmaxud
+| Pmaxsb
+| Pmaxsd
+
+(* 5.10.6 Floating-Point Round Instructions with Selectable Rounding Mode *)
+| Roundps
+| Roundpd
+| Roundss
+| Roundsd
+
+(* 5.10.7 Insertion and Extractions from XMM Registers *)
+| Extractps
+| Insertps
+| Pinsrb
+| Pinsrd
+| Pinsrw (* ERROR? Manual lists B/D/Q *)
+| Pextrb
+(* Pextrw - overloaded mnemonic *)
+| Pextrd
+
+(* 5.10.8 Packed Integer Format Conversions *)
+| Pmovsxbw
+| Pmovzxbw
+| Pmovsxbd
+| Pmovzxbd
+| Pmovsxwd
+| Pmovzxwd
+| Pmovsxbq
+| Pmovzxbq
+| Pmovsxwq
+| Pmovzxwq
+| Pmovsxdq
+| Pmovzxdq
+
+(* 5.10.9 Improved Sums of Absolute Differences for 4-Byte Blocks *)
+| Mpsadbw
+
+(* 5.10.10 Horizontal Search *)
+| Phminposuw
+
+(* 5.10.11 Packed Test *)
+| Ptest
+
+(* 5.10.12 Packed Qword Equality Comparisons *)
+| Pcmpeqq
+
+(* 5.10.13 Dword Packing with Unsigned Saturation *)
+| Packusdw
+
+(* 5.11 SSE4.2 Instruction Set *)
+(* 5.11.1 String and Text Processing Instructions *)
+| Pcmpestri
+| Pcmpestrm
+| Pcmpistri
+| Pcmpistrm
+
+(* 5.11.2 Packed Comparison SIMD Integer Instruction *)
+| Pcmpgtq
+
+(* 5.11.3 Application-Targeted Accelerator Instructions *)
+| Crc32
+| Popcnt
+
+(* 5.13 AESNI and PCLMULQDQ *)
+| Aesdec
+| Aesdeclast
+| Aesenc
+| Aesenclast
+| Aesimc
+| Aeskeygenassist
+| Pclmulqdq
+
+(* 5.13 Advanced Vector Extensions *)
+
+(* 5.12 System Instructions *)
+| Lgdt
+| Sgdt
+| Lldt
+| Sldt
+| Ltr 
+| Str 
+| Lidt
+| Sidt
+(* | Mov - overloaded mnemonic *)
+| Lmsw
+| Smsw
+| Clts
+| Arpl
+| Lar
+| Lsl
+| Verr
+| Verw
+(* | Mov - overloaded mnemonic *)
+| Invd
+| Wbinvd
+| Invlpg
+| Hlt
+| Rsm
+| Rdmsr
+| Wrmsr
+| Rdpmc
+| Rdtsc
+| Sysenter
+| Sysexit
+
+(* 5.13 64-Bit Mode Instructions *)
+| Syscall
+| Sysret
+
+(* 5.14 Virtual-Machine Extensions *)
+| Vmptrld
+| Vmptrst
+| Vmclear
+| Vmread
+| Vmwrite
+| Vmcall
+| Vmlaunch
+| Vmresume
+| Vmxoff
+| Vmxon  
+
+(* 5.15 Safer Mode Extensions *)
+| Getsec
+
+(* Undocumented *)
+| Icebp
+| Int3
+| Salc
+

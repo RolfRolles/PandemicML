@@ -1,0 +1,405 @@
+[PL] [I] All tests passed
+Depth 0
+b
+true
+a
+true
+c
+false
+a
+b
+true
+true
+a
+b
+true
+c
+true
+false
+d
+false
+b
+b
+d
+false
+c
+a
+d
+false
+b
+c
+b
+false
+b
+a
+b
+false
+a
+b
+c
+a
+false
+false
+c
+a
+true
+false
+b
+b
+false
+a
+a
+false
+d
+true
+false
+b
+false
+b
+a
+c
+c
+false
+false
+false
+true
+true
+c
+b
+true
+true
+false
+false
+false
+true
+a
+a
+d
+true
+false
+b
+false
+c
+d
+a
+d
+a
+a
+d
+a
+a
+false
+a
+b
+true
+c
+c
+a
+c
+true
+b
+d
+true
+Depth 1
+!b
+(c /\ true)
+(false ==> true)
+(false \/ false)
+(false /\ a)
+(true ==> false)
+(c <=> false)
+(false <=> false)
+(a /\ false)
+(d ==> false)
+(d \/ a)
+(true /\ b)
+(a <=> true)
+!a
+!true
+(c \/ d)
+(b ==> true)
+(false \/ a)
+(c /\ false)
+(a <=> a)
+!b
+(false <=> c)
+!c
+(true ==> b)
+!b
+(b <=> true)
+(false \/ b)
+(false \/ c)
+(b <=> a)
+!c
+(true <=> a)
+(false /\ false)
+(a <=> true)
+!true
+(d <=> true)
+(true ==> c)
+!true
+!b
+(d \/ false)
+(d <=> d)
+!true
+(true ==> false)
+(b /\ a)
+(true ==> d)
+!false
+(true <=> false)
+(false /\ a)
+!b
+(true <=> a)
+(b \/ false)
+!b
+(a ==> a)
+(true \/ false)
+(b ==> d)
+(false /\ c)
+(d /\ false)
+!true
+!b
+!true
+(c /\ d)
+(true ==> false)
+(true <=> b)
+(false \/ true)
+(false \/ d)
+(false \/ false)
+!d
+!false
+(b ==> d)
+(c \/ true)
+!a
+(d \/ b)
+(a ==> c)
+(true /\ b)
+(true /\ false)
+(true /\ b)
+(true \/ b)
+(true ==> false)
+(a <=> b)
+(true \/ true)
+!b
+(true /\ c)
+(d /\ true)
+!b
+!d
+(b ==> c)
+!false
+(b \/ true)
+(a \/ a)
+!c
+(d /\ a)
+(d /\ true)
+(d /\ d)
+(false <=> false)
+(c ==> true)
+(a \/ b)
+!false
+(true <=> true)
+(b ==> a)
+(c /\ b)
+!d
+Depth 2
+!(d <=> false)
+!(true /\ c)
+((false /\ b) /\ !true)
+((true ==> a) ==> !true)
+((d ==> a) ==> (c ==> true))
+((d \/ true) ==> (false ==> b))
+(!true /\ !d)
+(!false ==> !a)
+((b ==> false) /\ (a /\ c))
+!(true ==> c)
+((false \/ c) ==> (b <=> b))
+((c ==> c) <=> (b /\ c))
+((true \/ c) <=> (c ==> b))
+!!c
+((b ==> false) <=> (a ==> false))
+!(a /\ false)
+((false <=> c) \/ (c \/ false))
+((a \/ false) <=> (a <=> a))
+!(d ==> true)
+!!c
+((c \/ d) \/ (c /\ true))
+!!true
+(!a <=> (true <=> c))
+((false ==> d) <=> (d /\ true))
+!(a /\ c)
+((false <=> a) /\ !true)
+((b <=> true) <=> (false /\ false))
+!(b /\ a)
+((false /\ true) <=> (b <=> c))
+((d ==> d) <=> !b)
+!(c /\ true)
+((a ==> d) /\ (a /\ b))
+!(b /\ a)
+((a \/ false) <=> !false)
+!!d
+((c /\ d) ==> (a /\ c))
+((a /\ false) \/ (true \/ b))
+((b ==> a) <=> (b <=> c))
+((false /\ false) <=> (b ==> d))
+((false ==> a) \/ (true ==> true))
+!!false
+!(d /\ false)
+((c ==> d) \/ (b <=> true))
+((c ==> true) /\ !true)
+(!true /\ (true ==> false))
+!(d \/ false)
+((true ==> a) \/ (d /\ b))
+((true ==> d) ==> (b \/ b))
+((false <=> true) /\ (true \/ false))
+!(b <=> b)
+(!c /\ (a ==> true))
+((b /\ true) <=> (b /\ false))
+(!b \/ (c /\ false))
+((false \/ a) \/ (c ==> c))
+(!d ==> !d)
+((true /\ b) ==> (true <=> false))
+((d ==> c) /\ (d ==> true))
+!!a
+((true <=> true) <=> (a ==> b))
+(!c <=> (a ==> true))
+!(true ==> true)
+!(d \/ false)
+((a \/ d) ==> (d <=> b))
+((b ==> true) \/ (c \/ d))
+!!b
+!(false \/ true)
+((c ==> true) \/ (false ==> c))
+(!true /\ (true \/ a))
+(!c \/ !d)
+((d <=> true) ==> (true <=> a))
+(!true ==> (c ==> true))
+((true <=> false) /\ (false <=> d))
+(!a ==> (c /\ d))
+((false \/ false) \/ (false <=> d))
+((a <=> false) \/ (true \/ c))
+!(d \/ a)
+!(c ==> true)
+((b /\ b) ==> (true <=> b))
+((true /\ a) \/ (false ==> true))
+((a <=> b) <=> (b <=> a))
+((c /\ c) \/ (c <=> c))
+!(a \/ false)
+((true ==> d) ==> !false)
+(!a /\ (true ==> false))
+((false <=> false) /\ (true <=> c))
+((d \/ a) ==> !c)
+((d ==> d) /\ (d ==> true))
+((false <=> c) <=> (c /\ false))
+!(a \/ true)
+!(false ==> false)
+((c \/ true) <=> (a ==> true))
+((true \/ false) \/ (c ==> false))
+((false ==> true) <=> !d)
+((a <=> false) <=> (true <=> true))
+((false \/ true) ==> (d ==> a))
+((b ==> a) <=> (true ==> b))
+((b /\ c) /\ (false /\ c))
+((true /\ d) ==> (false /\ false))
+!(d /\ d)
+((a ==> true) /\ (d <=> c))
+Depth 3
+(((true /\ b) /\ (a /\ a)) /\ ((d ==> c) ==> !false))
+(((b \/ false) <=> (false ==> a)) \/ ((d /\ c) <=> !true))
+(((true <=> true) ==> (true /\ d)) \/ ((a <=> b) /\ (true <=> true)))
+(((a <=> d) /\ (true <=> b)) ==> ((true /\ true) ==> (b /\ a)))
+(!!b ==> !(b /\ false))
+!(!d <=> (d \/ false))
+!!(false ==> c)
+(((d <=> true) ==> (b \/ d)) <=> ((a /\ c) \/ !a))
+(!(d ==> a) \/ (!d /\ (true <=> false)))
+(((true <=> a) <=> (true <=> c)) ==> ((b <=> false) <=> (true /\ b)))
+!((b /\ false) /\ (false ==> false))
+(((c \/ a) \/ (a <=> d)) ==> ((c <=> c) \/ (false <=> a)))
+(((d /\ b) /\ (false /\ d)) <=> ((true /\ a) <=> (true /\ true)))
+(((d <=> false) /\ (b /\ c)) /\ ((false /\ d) ==> !c))
+!!(a ==> b)
+(((false <=> true) /\ (b <=> true)) /\ ((b <=> false) \/ (false \/ true)))
+((!true ==> !b) \/ ((a /\ d) ==> (true /\ d)))
+(((false ==> c) /\ (c /\ d)) /\ !!c)
+((!c /\ !c) \/ ((d ==> false) ==> !false))
+(((false /\ a) ==> !false) \/ (!b \/ (false \/ d)))
+(!(b /\ b) ==> ((a \/ a) <=> !b))
+!((b \/ true) /\ (c ==> false))
+((!true /\ !d) /\ (!b \/ (a <=> b)))
+(((a ==> d) \/ (a <=> b)) /\ (!a ==> (true <=> d)))
+(((b \/ b) ==> (true <=> c)) \/ !(b <=> true))
+!((d \/ d) \/ (false /\ b))
+(((false \/ false) /\ (b \/ b)) <=> (!c <=> (c /\ true)))
+(((d \/ a) <=> (d \/ a)) \/ ((b \/ b) \/ (b ==> c)))
+(((false /\ a) /\ (false \/ b)) /\ ((b <=> false) ==> (d /\ b)))
+(!(c \/ true) /\ ((b <=> true) \/ !a))
+(((d /\ d) \/ (false ==> true)) <=> !(true /\ true))
+!((false ==> false) <=> (a ==> a))
+(((c ==> c) \/ (false /\ false)) /\ (!b /\ (b \/ b)))
+(((b \/ b) /\ (d <=> true)) <=> ((a /\ c) <=> (false \/ c)))
+(((b ==> c) ==> (d ==> c)) \/ !(a /\ a))
+(((true ==> true) \/ (c ==> b)) \/ (!true <=> (a <=> c)))
+(((a ==> a) <=> (true <=> true)) /\ (!a /\ !a))
+((!c ==> (true ==> c)) \/ (!c ==> (a /\ true)))
+(((false \/ true) ==> (true ==> d)) ==> ((c <=> true) ==> !true))
+(((c \/ c) \/ (false ==> true)) \/ ((b /\ true) \/ (b \/ a)))
+((!true <=> !true) ==> ((true <=> c) ==> (b \/ c)))
+(((true /\ false) ==> (true /\ false)) ==> ((d ==> d) <=> (b \/ true)))
+(((c /\ true) \/ (c <=> b)) ==> ((a /\ true) <=> (false <=> b)))
+(!(c ==> false) \/ !(d <=> false))
+!((true ==> d) /\ (false <=> c))
+((!false \/ !false) /\ ((false ==> a) /\ (b <=> true)))
+((!true \/ (b \/ b)) <=> ((d /\ true) <=> (a /\ a)))
+(((d \/ a) ==> !false) <=> ((false \/ a) <=> (b ==> b)))
+(((c /\ true) <=> !false) ==> ((b ==> b) /\ !b))
+(((c <=> d) <=> (d <=> true)) /\ ((true \/ d) /\ (d \/ true)))
+(((true \/ b) ==> (c ==> true)) \/ !(a /\ c))
+(((c /\ true) ==> (true <=> b)) /\ ((a ==> d) /\ (c ==> true)))
+(((true /\ b) /\ (b <=> false)) \/ !(b /\ true))
+(((true /\ b) <=> (b /\ c)) /\ ((c <=> b) <=> (a ==> a)))
+((!false <=> (true ==> true)) ==> ((b /\ a) ==> (true ==> false)))
+(!(true ==> false) ==> (!c /\ !d))
+((!true \/ (d /\ a)) ==> ((b \/ b) \/ (false <=> b)))
+(((b \/ c) /\ (true \/ c)) ==> ((a /\ b) ==> (d \/ c)))
+(((true /\ true) \/ (true ==> false)) <=> ((d <=> d) \/ (a ==> false)))
+(((true ==> b) /\ (b \/ true)) ==> (!true /\ !a))
+!!(b \/ c)
+!!(b <=> c)
+((!d <=> (false ==> true)) /\ ((false ==> true) ==> (true /\ b)))
+!!(true /\ b)
+(((false <=> a) <=> (a ==> false)) /\ ((true \/ b) <=> !false))
+(((false ==> c) <=> !true) <=> ((true \/ c) ==> !a))
+((!a <=> (d ==> c)) <=> (!b \/ (true /\ true)))
+!((c \/ b) /\ (c /\ true))
+!!(false <=> a)
+(!(a \/ true) <=> ((b /\ true) ==> !false))
+((!a <=> (false \/ false)) <=> !(b ==> false))
+(((d /\ b) <=> (false ==> a)) \/ ((b ==> b) /\ (c /\ b)))
+!((true <=> false) ==> (b \/ d))
+(!(false /\ d) \/ ((false \/ b) ==> (b ==> a)))
+(((a <=> false) /\ (d \/ d)) /\ !(b <=> a))
+!!(d ==> false)
+(((true /\ true) <=> !b) \/ ((a <=> true) /\ !a))
+!((d \/ true) /\ (a ==> a))
+(((b ==> b) <=> (true /\ b)) ==> ((d ==> c) /\ !d))
+(((false <=> c) \/ !true) <=> ((a \/ b) ==> (false /\ a)))
+!(!true <=> !false)
+(((a ==> false) /\ (c ==> true)) /\ ((c <=> b) ==> !b))
+(((true <=> b) <=> (c \/ a)) /\ ((b /\ false) /\ (a \/ false)))
+((!c <=> !d) ==> ((d <=> d) <=> (b ==> true)))
+(!(false <=> c) /\ (!b <=> (d <=> c)))
+(((a \/ a) /\ !a) /\ !(true \/ true))
+!((b ==> d) ==> (a ==> b))
+(((true \/ true) ==> (false ==> d)) <=> (!a /\ (a /\ c)))
+(!(true /\ d) /\ ((true /\ false) ==> (b <=> true)))
+((!false \/ (b /\ a)) ==> ((c <=> c) ==> (true \/ false)))
+(((c \/ d) <=> (a ==> false)) ==> ((d /\ b) ==> (d /\ d)))
+(((a <=> true) \/ (b \/ c)) /\ (!d <=> (true /\ b)))
+(((d ==> c) /\ !d) <=> ((false /\ a) \/ (c /\ b)))
+((!a <=> (true /\ true)) <=> ((b <=> true) <=> !a))
+(!(d /\ true) <=> (!a <=> (c ==> a)))
+!((true /\ true) \/ (true ==> a))
+(((true \/ c) \/ (c /\ false)) <=> ((a /\ c) ==> (true <=> b)))
+((!b /\ (b \/ true)) /\ (!true ==> !true))
+!((true <=> false) ==> !d)
+(((c \/ false) \/ (false /\ d)) <=> ((true ==> c) <=> (d /\ c)))

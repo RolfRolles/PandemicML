@@ -1,0 +1,29 @@
+# Z3 -- I have moved this to its own directory with its own makefile.  Easy peasy.
+
+idatop/z3_stubs.o:
+	$(BYTECC) $(CFLAGS) $(BYTECCCOMPOPTS) /I"$(FLEXDIR)" /I"$(OCAMLLIB)" -c idatop/z3_stubs.c /Foidatop/z3_stubs.o 
+
+idatop/z3_theory_stubs.o:
+	$(BYTECC) $(CFLAGS) $(BYTECCCOMPOPTS) /I"$(FLEXDIR)" /I"$(OCAMLLIB)" -c idatop/z3_theory_stubs.c /Foidatop/z3_theory_stubs.o 
+
+idatop/z3.cmi:
+	$(CAMLC) $(COMPFLAGS) -c -o idatop/z3.cmi idatop/z3.mli
+
+z3.cmi: idatop/z3.cmi
+	cp idatop/z3.cmi .
+
+idatop/z3.cmo: z3.cmi
+	$(CAMLC) $(COMPFLAGS) -c -o idatop/z3.cmo idatop/z3.ml 
+
+# The "low level" library, which may or may not be useful, certainly doesn't need to be compiled in
+# Moved this to root/Util
+
+idatop/lowlevel.cmi:
+	$(CAMLC) $(COMPFLAGS) -c -o idatop/lowlevel.cmi idatop/lowlevel.mli
+
+lowlevel.cmi: idatop/lowlevel.cmi
+	cp idatop/lowlevel.cmi .
+
+idatop/lowlevel.cmo: lowlevel.cmi
+	$(CAMLC) $(COMPFLAGS) -c -o idatop/lowlevel.cmo idatop/lowlevel.ml 
+

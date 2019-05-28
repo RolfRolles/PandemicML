@@ -1,0 +1,45 @@
+DataStructures.cmo:
+DataStructures.cmx:
+IOAnalysis.cmo: X86Predicate.cmo X86Misc.cmo DataStructures.cmo
+IOAnalysis.cmx: X86Predicate.cmx X86Misc.cmx DataStructures.cmx
+JITSampler.cmo: X86Misc.cmo
+JITSampler.cmx: X86Misc.cmx
+Quadruple.cmo:
+Quadruple.cmx:
+Templates32.cmo:
+Templates32.cmx:
+X86IRSynthesizer.cmo: Z3Integration.cmo X86SemanticsDivinator.cmo \
+    X86PredicateEvaluator.cmo X86Predicate.cmo JITSampler.cmo
+X86IRSynthesizer.cmx: Z3Integration.cmx X86SemanticsDivinator.cmx \
+    X86PredicateEvaluator.cmx X86Predicate.cmx JITSampler.cmx
+X86IRSynthesizerGood.cmo: batInnerWeaktbl.cmi
+X86IRSynthesizerGood.cmx: batInnerWeaktbl.cmx
+X86Misc.cmo:
+X86Misc.cmx:
+X86Predicate.cmo:
+X86Predicate.cmx:
+X86PredicateEvaluator.cmo: X86Predicate.cmo X86Misc.cmo batInnerWeaktbl.cmi
+X86PredicateEvaluator.cmx: X86Predicate.cmx X86Misc.cmx batInnerWeaktbl.cmx
+X86PredicateGenerator.cmo: X86Predicate.cmo
+X86PredicateGenerator.cmx: X86Predicate.cmx
+X86Random.cmo: X86Random.cmi
+X86Random.cmx: X86Random.cmi
+X86RandomTest.cmo: X86Random.cmi
+X86RandomTest.cmx: X86Random.cmx
+X86SemanticsDivinator.cmo: Z3Integration.cmo X86PredicateGenerator.cmo \
+    X86PredicateEvaluator.cmo X86Predicate.cmo X86Misc.cmo JITSampler.cmo \
+    IOAnalysis.cmo DataStructures.cmo
+X86SemanticsDivinator.cmx: Z3Integration.cmx X86PredicateGenerator.cmx \
+    X86PredicateEvaluator.cmx X86Predicate.cmx X86Misc.cmx JITSampler.cmx \
+    IOAnalysis.cmx DataStructures.cmx
+X86TestUtil.cmo: X86TestUtil.cmi
+X86TestUtil.cmx: X86TestUtil.cmi
+X86ToIRRandomTest.cmo: X86TestUtil.cmi X86Random.cmi
+X86ToIRRandomTest.cmx: X86TestUtil.cmx X86Random.cmx
+Z3Integration.cmo: X86Predicate.cmo
+Z3Integration.cmx: X86Predicate.cmx
+batInnerWeaktbl.cmo: batInnerWeaktbl.cmi
+batInnerWeaktbl.cmx: batInnerWeaktbl.cmi
+X86Random.cmi:
+X86TestUtil.cmi:
+batInnerWeaktbl.cmi:

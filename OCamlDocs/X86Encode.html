@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="X86Disasm.html">
+<link rel="next" href="X86InternalOperand.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="IDA" rel="Chapter" href="IDA.html">
+<link title="IDAColor" rel="Chapter" href="IDAColor.html">
+<link title="IDAGUI" rel="Chapter" href="IDAGUI.html">
+<link title="IDAGraph" rel="Chapter" href="IDAGraph.html">
+<link title="IDAHotKey" rel="Chapter" href="IDAHotKey.html">
+<link title="IDATopLoop" rel="Chapter" href="IDATopLoop.html">
+<link title="JITRegion" rel="Chapter" href="JITRegion.html">
+<link title="Z3" rel="Chapter" href="Z3.html">
+<link title="IR" rel="Chapter" href="IR.html">
+<link title="IRLocalOpt" rel="Chapter" href="IRLocalOpt.html">
+<link title="IRTypeCheck" rel="Chapter" href="IRTypeCheck.html">
+<link title="PpIR" rel="Chapter" href="PpIR.html">
+<link title="X86" rel="Chapter" href="X86.html">
+<link title="X86CFG" rel="Chapter" href="X86CFG.html">
+<link title="X86CFGAssembler" rel="Chapter" href="X86CFGAssembler.html">
+<link title="X86Constraints" rel="Chapter" href="X86Constraints.html">
+<link title="X86Decode" rel="Chapter" href="X86Decode.html">
+<link title="X86Disasm" rel="Chapter" href="X86Disasm.html">
+<link title="X86Encode" rel="Chapter" href="X86Encode.html">
+<link title="X86InternalOperand" rel="Chapter" href="X86InternalOperand.html">
+<link title="X86LocalOpt" rel="Chapter" href="X86LocalOpt.html">
+<link title="X86TextualAssembler" rel="Chapter" href="X86TextualAssembler.html">
+<link title="X86TypeCheck" rel="Chapter" href="X86TypeCheck.html">
+<link title="X86Util" rel="Chapter" href="X86Util.html">
+<link title="X86Random" rel="Chapter" href="X86Random.html">
+<link title="X86ToIR" rel="Chapter" href="X86ToIR.html">
+<link title="ASMUtil" rel="Chapter" href="ASMUtil.html">
+<link title="LowLevel-old" rel="Chapter" href="LowLevel-old.html">
+<link title="StringUtil" rel="Chapter" href="StringUtil.html">
+<link title="Util" rel="Chapter" href="Util.html"><link title="Exceptions" rel="Section" href="#6_Exceptions">
+<link title="Encoding functions" rel="Section" href="#6_Encodingfunctions">
+<title>X86Encode</title>
+</head>
+<body>
+<div class="navbar"><a href="X86Disasm.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="X86InternalOperand.html">Next</a>
+</div>
+<center><h1>Module <a href="type_X86Encode.html">X86Encode</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> X86Encode: <code class="code">sig</code> <a href="X86Encode.html">..</a> <code class="code">end</code></pre>The x86 instruction encoder.  Provides one function to encode an instruction:  
+    you give it an <a href="X86.html#TYPEx86instr"><code class="code">X86.x86instr</code></a>, it gives you a list of int32s describing
+    the encoding.  Since I haven't had to encode jumps, this is clearly 
+    lacking the address parameter to the encoding function.  Also, I use
+    <a href="X86.html#TYPEx86instr"><code class="code">X86.x86instr</code></a> instead of <a href="X86.html#TYPEx86instrpref"><code class="code">X86.x86instrpref</code></a>, which means I don't encode
+    instruction prefixes.  These changes are trivial, but they have not yet 
+    been implemented.<br>
+<hr width="100%">
+<br>
+<span id="6_Exceptions"><h6>Exceptions</h6></span><br>
+<pre><span id="EXCEPTIONInvalidOperands"><span class="keyword">exception</span> InvalidOperands</span> <span class="keyword">of</span> <code class="type"><a href="X86.html#TYPEx86instrpref">X86.x86instrpref</a></code></pre>
+<div class="info">
+Instruction didn't type-check<br>
+</div>
+<br>
+<span id="6_Encodingfunctions"><h6>Encoding functions</h6></span><br>
+<pre><span id="VALencode_instruction"><span class="keyword">val</span> encode_instruction</span> : <code class="type"><a href="X86.html#TYPEx86instrpref">X86.x86instrpref</a> -> int32 list</code></pre><div class="info">
+Give it an instruction (no prefix-wrapper) and currently not an address, 
+    and it gives you a list of int32 values corresponding to the encoding.<br>
+</div>
+<pre><span id="VALmnem_to_encodings"><span class="keyword">val</span> mnem_to_encodings</span> : <code class="type"><a href="X86.html#TYPEx86mnem">X86.x86mnem</a> -><br>       (X86InternalOperand.x86_abstract_operand list *<br>        (<a href="X86Constraints.html#TYPEopnd_size_constraint">X86Constraints.opnd_size_constraint</a> * <a href="X86Constraints.html#TYPEopnd_addr_constraint">X86Constraints.opnd_addr_constraint</a>))<br>       list</code></pre><div class="info">
+Given an mnemonic, return a list of encodings together with operand / 
+    address size constraints<br>
+</div>
+</body></html>

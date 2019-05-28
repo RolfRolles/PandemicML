@@ -1,0 +1,34 @@
+type output = | Addr | Left | Right | Result | Value | Arg of int
+
+type expr = 
+| LoadMem of expr * size
+| BinOp of expr * IR.binop * expr
+| Const of int32 * size
+
+type stmt =
+| StoreMem of expr * expr * type
+| Assign of var * exp
+| CallExternal of func * exp list
+| Syscall
+
+type gadget = int
+
+type schedulable = 
+(* One gadget *)
+| Atom of gadget
+(* Do both, but not in a fixed order *)
+| Unordered of schedulable * schedulable
+(* Do two actions in a row *)
+| Seq of schedulable * schedulable
+
+let munchExpr = function
+| LoadMem(addr,size) -> 
+  let l_addr = munchExpr addr in
+  (* Locate all gadgets that load size worth of memory into some other register *)
+  
+  
+| BinOp(le,bo,re) -> 
+| Const(i32,size) ->
+
+let munchStmt = function
+| StoreMem(addr,value,Byte) ->

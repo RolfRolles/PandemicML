@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="IDATopLoop.html">
+<link rel="next" href="Z3.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="IDA" rel="Chapter" href="IDA.html">
+<link title="IDAColor" rel="Chapter" href="IDAColor.html">
+<link title="IDAGUI" rel="Chapter" href="IDAGUI.html">
+<link title="IDAGraph" rel="Chapter" href="IDAGraph.html">
+<link title="IDAHotKey" rel="Chapter" href="IDAHotKey.html">
+<link title="IDATopLoop" rel="Chapter" href="IDATopLoop.html">
+<link title="JITRegion" rel="Chapter" href="JITRegion.html">
+<link title="Z3" rel="Chapter" href="Z3.html">
+<link title="IR" rel="Chapter" href="IR.html">
+<link title="IRLocalOpt" rel="Chapter" href="IRLocalOpt.html">
+<link title="IRTypeCheck" rel="Chapter" href="IRTypeCheck.html">
+<link title="PpIR" rel="Chapter" href="PpIR.html">
+<link title="X86" rel="Chapter" href="X86.html">
+<link title="X86CFG" rel="Chapter" href="X86CFG.html">
+<link title="X86CFGAssembler" rel="Chapter" href="X86CFGAssembler.html">
+<link title="X86Constraints" rel="Chapter" href="X86Constraints.html">
+<link title="X86Decode" rel="Chapter" href="X86Decode.html">
+<link title="X86Disasm" rel="Chapter" href="X86Disasm.html">
+<link title="X86Encode" rel="Chapter" href="X86Encode.html">
+<link title="X86InternalOperand" rel="Chapter" href="X86InternalOperand.html">
+<link title="X86LocalOpt" rel="Chapter" href="X86LocalOpt.html">
+<link title="X86TextualAssembler" rel="Chapter" href="X86TextualAssembler.html">
+<link title="X86TypeCheck" rel="Chapter" href="X86TypeCheck.html">
+<link title="X86Util" rel="Chapter" href="X86Util.html">
+<link title="X86Random" rel="Chapter" href="X86Random.html">
+<link title="X86ToIR" rel="Chapter" href="X86ToIR.html">
+<link title="ASMUtil" rel="Chapter" href="ASMUtil.html">
+<link title="LowLevel-old" rel="Chapter" href="LowLevel-old.html">
+<link title="StringUtil" rel="Chapter" href="StringUtil.html">
+<link title="Util" rel="Chapter" href="Util.html"><link title="Module opaque type" rel="Section" href="#6_Moduleopaquetype">
+<link title="Types used in random testing" rel="Section" href="#6_Typesusedinrandomtesting">
+<link title="Manipulation functions" rel="Section" href="#6_Manipulationfunctions">
+<title>JITRegion</title>
+</head>
+<body>
+<div class="navbar"><a href="IDATopLoop.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="Z3.html">Next</a>
+</div>
+<center><h1>Module <a href="type_JITRegion.html">JITRegion</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> JITRegion: <code class="code">sig</code> <a href="JITRegion.html">..</a> <code class="code">end</code></pre>Module for allocating and deallocating RWX memory regions, blitting bytes
+    into them, and executing them.<br>
+<hr width="100%">
+<br>
+<span id="6_Moduleopaquetype"><h6>Module opaque type</h6></span><br>
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+<div class="info">
+Opaque type of a JITtable memory region.  Internally, this is actually a 
+    memory address returned by VirtualAlloc.<br>
+</div>
+
+<br>
+<span id="6_Typesusedinrandomtesting"><h6>Types used in random testing</h6></span><br>
+<br><code><span id="TYPEinstate"><span class="keyword">type</span> <code class="type"></code>instate</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>lhs_in&nbsp;: <code class="type">int32</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>rhs_in&nbsp;: <code class="type">int32</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>input3&nbsp;: <code class="type">int32</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>flags_in&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info">
+That which comes in:  three input values and the flags.<br>
+</div>
+
+<br><code><span id="TYPEoutstate"><span class="keyword">type</span> <code class="type"></code>outstate</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>lhs_out&nbsp;: <code class="type">int32</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>output2&nbsp;: <code class="type">int32</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>flags_out&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info">
+That which goes out:  two output values and the flags.<br>
+</div>
+
+<br>
+<span id="6_Manipulationfunctions"><h6>Manipulation functions</h6></span><br>
+<pre><span id="VALallocate"><span class="keyword">val</span> allocate</span> : <code class="type">int -> <a href="JITRegion.html#TYPEt">t</a> option</code></pre><div class="info">
+Returns a region at least as big as the integer argument, or <code class="code">None</code>.<br>
+</div>
+<pre><span id="VALdeallocate"><span class="keyword">val</span> deallocate</span> : <code class="type"><a href="JITRegion.html#TYPEt">t</a> -> unit</code></pre><div class="info">
+Deallocates a previously-allocated region.  Hooray for opaque types here,
+    as we don't have to worry about the user passing in a random value.<br>
+</div>
+<pre><span id="VALblit"><span class="keyword">val</span> blit</span> : <code class="type"><a href="JITRegion.html#TYPEt">t</a> -> int32 array -> bool</code></pre><div class="info">
+Write an array of bytes into the memory region, starting at the first
+    address.<br>
+</div>
+<pre><span id="VALblit_at"><span class="keyword">val</span> blit_at</span> : <code class="type"><a href="JITRegion.html#TYPEt">t</a> -> int -> int32 array -> bool</code></pre><div class="info">
+Write an array of bytes into the memory region, starting at the address
+    supplied as the second parameter.<br>
+</div>
+<pre><span id="VALexecute"><span class="keyword">val</span> execute</span> : <code class="type"><a href="JITRegion.html#TYPEt">t</a> -> <a href="JITRegion.html#TYPEinstate">instate</a> -> <a href="JITRegion.html#TYPEoutstate">outstate</a></code></pre><div class="info">
+Execute the code on the region, starting at address zero.  Given an 
+    <a href="JITRegion.html#TYPEinstate"><code class="code">JITRegion.instate</code></a>, the JITted code is responsible for producing an <a href="JITRegion.html#TYPEoutstate"><code class="code">JITRegion.outstate</code></a>.<br>
+</div>
+<pre><span id="VALexecute_at"><span class="keyword">val</span> execute_at</span> : <code class="type"><a href="JITRegion.html#TYPEt">t</a> -> int -> <a href="JITRegion.html#TYPEinstate">instate</a> -> <a href="JITRegion.html#TYPEoutstate">outstate</a></code></pre><div class="info">
+Execute the code on the region, starting at the address provided by the
+    second parameter.  Given an <a href="JITRegion.html#TYPEinstate"><code class="code">JITRegion.instate</code></a>, the JITted code is responsible 
+    for producing an <a href="JITRegion.html#TYPEoutstate"><code class="code">JITRegion.outstate</code></a>.<br>
+</div>
+</body></html>

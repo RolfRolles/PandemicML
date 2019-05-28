@@ -1,0 +1,88 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="IDA" rel="Chapter" href="IDA.html">
+<link title="IDAColor" rel="Chapter" href="IDAColor.html">
+<link title="IDAGUI" rel="Chapter" href="IDAGUI.html">
+<link title="IDAGraph" rel="Chapter" href="IDAGraph.html">
+<link title="IDAHotKey" rel="Chapter" href="IDAHotKey.html">
+<link title="IDATopLoop" rel="Chapter" href="IDATopLoop.html">
+<link title="JITRegion" rel="Chapter" href="JITRegion.html">
+<link title="Z3" rel="Chapter" href="Z3.html">
+<link title="IR" rel="Chapter" href="IR.html">
+<link title="IRLocalOpt" rel="Chapter" href="IRLocalOpt.html">
+<link title="IRTypeCheck" rel="Chapter" href="IRTypeCheck.html">
+<link title="PpIR" rel="Chapter" href="PpIR.html">
+<link title="X86" rel="Chapter" href="X86.html">
+<link title="X86CFG" rel="Chapter" href="X86CFG.html">
+<link title="X86CFGAssembler" rel="Chapter" href="X86CFGAssembler.html">
+<link title="X86Constraints" rel="Chapter" href="X86Constraints.html">
+<link title="X86Decode" rel="Chapter" href="X86Decode.html">
+<link title="X86Disasm" rel="Chapter" href="X86Disasm.html">
+<link title="X86Encode" rel="Chapter" href="X86Encode.html">
+<link title="X86InternalOperand" rel="Chapter" href="X86InternalOperand.html">
+<link title="X86LocalOpt" rel="Chapter" href="X86LocalOpt.html">
+<link title="X86TextualAssembler" rel="Chapter" href="X86TextualAssembler.html">
+<link title="X86TypeCheck" rel="Chapter" href="X86TypeCheck.html">
+<link title="X86Util" rel="Chapter" href="X86Util.html">
+<link title="X86Random" rel="Chapter" href="X86Random.html">
+<link title="X86ToIR" rel="Chapter" href="X86ToIR.html">
+<link title="ASMUtil" rel="Chapter" href="ASMUtil.html">
+<link title="LowLevel-old" rel="Chapter" href="LowLevel-old.html">
+<link title="StringUtil" rel="Chapter" href="StringUtil.html">
+<link title="Util" rel="Chapter" href="Util.html"><title>IR</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;castkind&nbsp;=&nbsp;<span class="constructor">Unsigned</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Signed</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">High</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Low</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;typereg&nbsp;=&nbsp;<span class="constructor">TypeReg_1</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">TypeReg_8</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">TypeReg_16</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">TypeReg_32</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">TypeReg_64</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;typeendian&nbsp;=&nbsp;<span class="constructor">Little</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Big</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Norm</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;var&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Mem</span>&nbsp;<span class="keyword">of</span>&nbsp;int&nbsp;*&nbsp;<span class="constructor">IR</span>.typeendian&nbsp;*&nbsp;<span class="constructor">IR</span>.typereg<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Variable</span>&nbsp;<span class="keyword">of</span>&nbsp;int&nbsp;*&nbsp;<span class="constructor">IR</span>.typereg<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;const&nbsp;=&nbsp;int64&nbsp;*&nbsp;<span class="constructor">IR</span>.typereg<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;binop&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Add</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Sub</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Mul</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">SDiv</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">UDiv</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">SMod</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">UMod</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Shl</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Shr</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Sar</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">And</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Or</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Xor</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">EQ</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">NE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">ULT</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">ULE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">SLT</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">SLE</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;unop&nbsp;=&nbsp;<span class="constructor">Neg</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Not</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;expr&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Binop</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.expr&nbsp;*&nbsp;<span class="constructor">IR</span>.binop&nbsp;*&nbsp;<span class="constructor">IR</span>.expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Unop</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.unop&nbsp;*&nbsp;<span class="constructor">IR</span>.expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Load</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.expr&nbsp;*&nbsp;<span class="constructor">IR</span>.expr&nbsp;*&nbsp;<span class="constructor">IR</span>.typereg<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Store</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.expr&nbsp;*&nbsp;<span class="constructor">IR</span>.expr&nbsp;*&nbsp;<span class="constructor">IR</span>.expr&nbsp;*&nbsp;<span class="constructor">IR</span>.typereg<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Var</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.var<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Let</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.var&nbsp;*&nbsp;<span class="constructor">IR</span>.expr&nbsp;*&nbsp;<span class="constructor">IR</span>.expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Cast</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.castkind&nbsp;*&nbsp;<span class="constructor">IR</span>.typereg&nbsp;*&nbsp;<span class="constructor">IR</span>.expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Const</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.const<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;instr&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Assign</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.var&nbsp;*&nbsp;<span class="constructor">IR</span>.expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Jmp</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">CJmp</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.expr&nbsp;*&nbsp;<span class="constructor">IR</span>.expr&nbsp;*&nbsp;<span class="constructor">IR</span>.expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Halt</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Assert</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">IR</span>.expr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Label</span>&nbsp;<span class="keyword">of</span>&nbsp;int32<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Special</span>&nbsp;<span class="keyword">of</span>&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Comment</span>&nbsp;<span class="keyword">of</span>&nbsp;string<br>
+<span class="keyword">end</span></code></body></html>

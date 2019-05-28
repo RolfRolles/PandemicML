@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="X86Constraints.html">
+<link rel="next" href="X86Disasm.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="IDA" rel="Chapter" href="IDA.html">
+<link title="IDAColor" rel="Chapter" href="IDAColor.html">
+<link title="IDAGUI" rel="Chapter" href="IDAGUI.html">
+<link title="IDAGraph" rel="Chapter" href="IDAGraph.html">
+<link title="IDAHotKey" rel="Chapter" href="IDAHotKey.html">
+<link title="IDATopLoop" rel="Chapter" href="IDATopLoop.html">
+<link title="JITRegion" rel="Chapter" href="JITRegion.html">
+<link title="Z3" rel="Chapter" href="Z3.html">
+<link title="IR" rel="Chapter" href="IR.html">
+<link title="IRLocalOpt" rel="Chapter" href="IRLocalOpt.html">
+<link title="IRTypeCheck" rel="Chapter" href="IRTypeCheck.html">
+<link title="PpIR" rel="Chapter" href="PpIR.html">
+<link title="X86" rel="Chapter" href="X86.html">
+<link title="X86CFG" rel="Chapter" href="X86CFG.html">
+<link title="X86CFGAssembler" rel="Chapter" href="X86CFGAssembler.html">
+<link title="X86Constraints" rel="Chapter" href="X86Constraints.html">
+<link title="X86Decode" rel="Chapter" href="X86Decode.html">
+<link title="X86Disasm" rel="Chapter" href="X86Disasm.html">
+<link title="X86Encode" rel="Chapter" href="X86Encode.html">
+<link title="X86InternalOperand" rel="Chapter" href="X86InternalOperand.html">
+<link title="X86LocalOpt" rel="Chapter" href="X86LocalOpt.html">
+<link title="X86TextualAssembler" rel="Chapter" href="X86TextualAssembler.html">
+<link title="X86TypeCheck" rel="Chapter" href="X86TypeCheck.html">
+<link title="X86Util" rel="Chapter" href="X86Util.html">
+<link title="X86Random" rel="Chapter" href="X86Random.html">
+<link title="X86ToIR" rel="Chapter" href="X86ToIR.html">
+<link title="ASMUtil" rel="Chapter" href="ASMUtil.html">
+<link title="LowLevel-old" rel="Chapter" href="LowLevel-old.html">
+<link title="StringUtil" rel="Chapter" href="StringUtil.html">
+<link title="Util" rel="Chapter" href="Util.html"><link title="Exceptions" rel="Section" href="#6_Exceptions">
+<link title="Functions" rel="Section" href="#6_Functions">
+<title>X86Decode</title>
+</head>
+<body>
+<div class="navbar"><a href="X86Constraints.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="X86Disasm.html">Next</a>
+</div>
+<center><h1>Module <a href="type_X86Decode.html">X86Decode</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> X86Decode: <code class="code">sig</code> <a href="X86Decode.html">..</a> <code class="code">end</code></pre>Module for decoding X86 instructions.  First, the module must be initialized
+    by calling <a href="X86Decode.html#VALinit"><code class="code">X86Decode.init</code></a>, whose parameter get_byte is a function that returns a byte,
+    given an address.  After doing so, the user is free to call <a href="X86Decode.html#VALdecode"><code class="code">X86Decode.decode</code></a>, which
+    either raises one of the exceptions listed below, or returns an x86 
+    instruction object, i.e. an <a href="X86.html#TYPEx86mnem"><code class="code">X86.x86mnem</code></a> and a list of <a href="X86.html#TYPEx86operand"><code class="code">X86.x86operand</code></a>s,
+    the length of the instruction, and an <a href="ASMUtil.html#TYPEcfsuccessors"><code class="code">ASMUtil.cfsuccessors</code></a> variant type
+    describing the successor(s).<br>
+<hr width="100%">
+<br>
+<span id="6_Exceptions"><h6>Exceptions</h6></span><br>
+<pre><span id="EXCEPTIONUnimplementedInstruction"><span class="keyword">exception</span> UnimplementedInstruction</span> <span class="keyword">of</span> <code class="type">string</code></pre>
+<div class="info">
+Instruction unimplemented.  Should not occur in practice, as I support all
+    of x86/32.<br>
+</div>
+<pre><span id="EXCEPTIONTooLongInstruction"><span class="keyword">exception</span> TooLongInstruction</span></pre>
+<div class="info">
+Instruction was too long to be decoded.  Could happen in practice if there
+    are too many prefixes on the instruction.<br>
+</div>
+<pre><span id="EXCEPTIONInvalidLockPrefix"><span class="keyword">exception</span> InvalidLockPrefix</span> <span class="keyword">of</span> <code class="type"><a href="X86.html#TYPEx86instrpref">X86.x86instrpref</a></code></pre>
+<div class="info">
+Instruction (the exception parameter) had an invalid lock prefix. Could 
+    easily happen in practice.<br>
+</div>
+<pre><span id="EXCEPTIONInvalidInstruction"><span class="keyword">exception</span> InvalidInstruction</span></pre>
+<div class="info">
+Instruction was invalid.  Could happen in practice.<br>
+</div>
+<pre><span id="EXCEPTIONDoMoreResearch"><span class="keyword">exception</span> DoMoreResearch</span> <span class="keyword">of</span> <code class="type">string</code></pre>
+<div class="info">
+Encountered an ambiguous situation:  multiple segment prefixes, or multiple
+    prefixes on an SSE instruction.  The string describes which fault occurred.<br>
+</div>
+<br>
+<span id="6_Functions"><h6>Functions</h6></span><br>
+<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">(int32 -> int32) -> unit</code></pre><div class="info">
+Initialize the module.  Argument is a routine that takes an address and 
+    returns an int32 (the byte at that address).  There are probably smarter 
+    ways to do this, e.g. by declaring this as a module, and parameterizing the 
+    get_byte function.<br>
+</div>
+<pre><span id="VALdecode"><span class="keyword">val</span> decode</span> : <code class="type">int32 -> <a href="X86.html#TYPEx86instrpref">X86.x86instrpref</a> * int * <a href="ASMUtil.html#TYPEcfsuccessors">ASMUtil.cfsuccessors</a></code></pre><div class="info">
+Given an address, return an instruction (a mnemonic, its list of operands,
+    and its group 1 prefixes, i.e. <code class="code">lock</code>, <code class="code">rep</code>), the length of the instruction,
+    and a variant type describing its successors.<br>
+</div>
+</body></html>

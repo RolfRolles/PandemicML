@@ -1,0 +1,56 @@
+Protection Options for blob.vm.exe
+----------------------------------
+
+Macros Information
+------------------
+VM Macros: 1
+CodeReplace Macros: 0
+ENCRYPT Macros: 0
+CLEAR Macros: 0
+
+
+Protection Options
+------------------
+Anti-Debugger: Disabled
+Anti-Dumpers: DISABLED
+Entry Point Ofuscation: DISABLED
+Resource Encryption: DISABLED
+VMWare compatible: ENABLED
+API-Wrapping Level: Disable
+Anti-Patching: None
+Metamorph Security: DISABLED
+Memory Guard: DISABLED
+When Debugger Found: Display Message
+Application compression: DISABLED
+Resources compression: DISABLED
+SecureEngine compression: DISABLED
+Anti-File Monitor: DISABLED
+Anti-Registry Monitor: DISABLED
+Delphi/BCB form protection: DISABLED
+
+
+Virtual Machine Settings
+------------------------
+Number of Virtual APIs wrapped: 0
+API Virtualization Level: 1
+Entry Point Virtualization: 15 instructions
+Multi Branch Technology: DISABLED
+Virtual Machine Processor: Mutable RISC-64 processor
+Number of CPUs: 1
+Opcode Type: Static opcodes
+Dynamic Opcode: DISABLED
+
+
+Advanced Protection Options
+---------------------------
+Encrypt Application: DISABLED
+DLL plugin: DISABLED
+Hide from PE scanners: Standard
+.NET assemblies: DISABLED
+Active Context: DISABLED
+Add Manifest: Don't add manifest
+
+
+XBundler files
+--------------
+No files to bundle

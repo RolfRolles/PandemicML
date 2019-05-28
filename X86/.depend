@@ -1,0 +1,59 @@
+X86CFG.cmo: X86Decode.cmi X86.cmi X86CFG.cmi
+X86CFG.cmx: X86Decode.cmx X86.cmi X86CFG.cmi
+X86CFGAssembler-calls.cmo: X86Util.cmi X86Encode.cmi X86CFG.cmi X86.cmi
+X86CFGAssembler-calls.cmx: X86Util.cmx X86Encode.cmx X86CFG.cmx X86.cmi
+X86CFGAssembler.cmo: X86Util.cmi X86Encode.cmi X86CFG.cmi X86.cmi \
+    X86CFGAssembler.cmi
+X86CFGAssembler.cmx: X86Util.cmx X86Encode.cmx X86CFG.cmx X86.cmi \
+    X86CFGAssembler.cmi
+X86Constraints.cmo: X86TypeCheck.cmi X86Constraints.cmi
+X86Constraints.cmx: X86TypeCheck.cmx X86Constraints.cmi
+X86Decode-Old.cmo: X86Disasm.cmi X86.cmi
+X86Decode-Old.cmx: X86Disasm.cmx X86.cmi
+X86Decode.cmo: X86.cmi X86Decode.cmi
+X86Decode.cmx: X86.cmi X86Decode.cmi
+X86DecodeUtil.cmo: X86.cmi
+X86DecodeUtil.cmx: X86.cmi
+X86Disasm.cmo: X86.cmi X86Disasm.cmi
+X86Disasm.cmx: X86.cmi X86Disasm.cmi
+X86Encode.cmo: X86Util.cmi X86TypeCheck.cmi X86InternalOperand.cmi \
+    X86EncodeUtil.cmo X86EncodeTable.cmi X86Disasm.cmi X86Constraints.cmi \
+    X86.cmi X86Encode.cmi
+X86Encode.cmx: X86Util.cmx X86TypeCheck.cmx X86InternalOperand.cmx \
+    X86EncodeUtil.cmx X86EncodeTable.cmx X86Disasm.cmx X86Constraints.cmx \
+    X86.cmi X86Encode.cmi
+X86EncodeSimpler.cmo: X86InternalOperand.cmi X86EncodeUtil.cmo \
+    X86EncodeTable.cmi X86.cmi
+X86EncodeSimpler.cmx: X86InternalOperand.cmx X86EncodeUtil.cmx \
+    X86EncodeTable.cmx X86.cmi
+X86EncodeTable.cmo: X86InternalOperand.cmi X86Constraints.cmi X86.cmi \
+    X86EncodeTable.cmi
+X86EncodeTable.cmx: X86InternalOperand.cmx X86Constraints.cmx X86.cmi \
+    X86EncodeTable.cmi
+X86EncodeUtil.cmo: X86.cmi
+X86EncodeUtil.cmx: X86.cmi
+X86InternalOperand.cmo: X86InternalOperand.cmi
+X86InternalOperand.cmx: X86InternalOperand.cmi
+X86LocalOpt.cmo: X86Disasm.cmi X86.cmi X86LocalOpt.cmi
+X86LocalOpt.cmx: X86Disasm.cmx X86.cmi X86LocalOpt.cmi
+X86Synthesis.cmo: X86InternalOperand.cmi X86Encode.cmi X86Disasm.cmi X86.cmi
+X86Synthesis.cmx: X86InternalOperand.cmx X86Encode.cmx X86Disasm.cmx X86.cmi
+X86TextualAssembler.cmo: X86.cmi X86TextualAssembler.cmi
+X86TextualAssembler.cmx: X86.cmi X86TextualAssembler.cmi
+X86TypeCheck.cmo: X86InternalOperand.cmi X86.cmi X86TypeCheck.cmi
+X86TypeCheck.cmx: X86InternalOperand.cmx X86.cmi X86TypeCheck.cmi
+X86Util.cmo: X86.cmi X86Util.cmi
+X86Util.cmx: X86.cmi X86Util.cmi
+X86.cmi:
+X86CFG.cmi: X86.cmi
+X86CFGAssembler.cmi: X86CFG.cmi
+X86Constraints.cmi: X86TypeCheck.cmi X86.cmi
+X86Decode.cmi: X86.cmi
+X86Disasm.cmi: X86.cmi
+X86Encode.cmi: X86.cmi
+X86EncodeTable.cmi: X86InternalOperand.cmi X86Constraints.cmi X86.cmi
+X86InternalOperand.cmi:
+X86LocalOpt.cmi: X86.cmi
+X86TextualAssembler.cmi: X86.cmi
+X86TypeCheck.cmi: X86InternalOperand.cmi X86.cmi
+X86Util.cmi: X86.cmi

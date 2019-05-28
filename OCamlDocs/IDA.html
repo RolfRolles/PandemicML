@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="next" href="IDAColor.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="IDA" rel="Chapter" href="IDA.html">
+<link title="IDAColor" rel="Chapter" href="IDAColor.html">
+<link title="IDAGUI" rel="Chapter" href="IDAGUI.html">
+<link title="IDAGraph" rel="Chapter" href="IDAGraph.html">
+<link title="IDAHotKey" rel="Chapter" href="IDAHotKey.html">
+<link title="IDATopLoop" rel="Chapter" href="IDATopLoop.html">
+<link title="JITRegion" rel="Chapter" href="JITRegion.html">
+<link title="Z3" rel="Chapter" href="Z3.html">
+<link title="IR" rel="Chapter" href="IR.html">
+<link title="IRLocalOpt" rel="Chapter" href="IRLocalOpt.html">
+<link title="IRTypeCheck" rel="Chapter" href="IRTypeCheck.html">
+<link title="PpIR" rel="Chapter" href="PpIR.html">
+<link title="X86" rel="Chapter" href="X86.html">
+<link title="X86CFG" rel="Chapter" href="X86CFG.html">
+<link title="X86CFGAssembler" rel="Chapter" href="X86CFGAssembler.html">
+<link title="X86Constraints" rel="Chapter" href="X86Constraints.html">
+<link title="X86Decode" rel="Chapter" href="X86Decode.html">
+<link title="X86Disasm" rel="Chapter" href="X86Disasm.html">
+<link title="X86Encode" rel="Chapter" href="X86Encode.html">
+<link title="X86InternalOperand" rel="Chapter" href="X86InternalOperand.html">
+<link title="X86LocalOpt" rel="Chapter" href="X86LocalOpt.html">
+<link title="X86TextualAssembler" rel="Chapter" href="X86TextualAssembler.html">
+<link title="X86TypeCheck" rel="Chapter" href="X86TypeCheck.html">
+<link title="X86Util" rel="Chapter" href="X86Util.html">
+<link title="X86Random" rel="Chapter" href="X86Random.html">
+<link title="X86ToIR" rel="Chapter" href="X86ToIR.html">
+<link title="ASMUtil" rel="Chapter" href="ASMUtil.html">
+<link title="LowLevel-old" rel="Chapter" href="LowLevel-old.html">
+<link title="StringUtil" rel="Chapter" href="StringUtil.html">
+<link title="Util" rel="Chapter" href="Util.html"><link title="Functions" rel="Section" href="#6_Functions">
+<title>IDA</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="IDAColor.html">Next</a>
+</div>
+<center><h1>Module <a href="type_IDA.html">IDA</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> IDA: <code class="code">sig</code> <a href="IDA.html">..</a> <code class="code">end</code></pre>Main module for interacting with IDA.<br>
+<hr width="100%">
+<br>
+<span id="6_Functions"><h6>Functions</h6></span><br>
+<pre><span id="VALget_screen_ea"><span class="keyword">val</span> get_screen_ea</span> : <code class="type">unit -> int32</code></pre><div class="info">
+Returns the address at which the user's cursor is currently located.<br>
+</div>
+<pre><span id="VALset_cmt"><span class="keyword">val</span> set_cmt</span> : <code class="type">int32 -> string -> bool -> unit</code></pre><div class="info">
+Sets a comment at an address; the boolean specifies whether the comment 
+    repeats.<br>
+</div>
+<pre><span id="VALset_xterior_cmt"><span class="keyword">val</span> set_xterior_cmt</span> : <code class="type">int32 -> string -> bool -> unit</code></pre><div class="info">
+Sets an anterior or posterior comment at an address; the boolean specifies 
+    whether the comment repeats.<br>
+</div>
+<pre><span id="VALset_anterior_cmt"><span class="keyword">val</span> set_anterior_cmt</span> : <code class="type">int32 -> string -> unit</code></pre><div class="info">
+Sets an anterior comment at an address; the boolean specifies whether the 
+    comment repeats.<br>
+</div>
+<pre><span id="VALset_posterior_cmt"><span class="keyword">val</span> set_posterior_cmt</span> : <code class="type">int32 -> string -> unit</code></pre><div class="info">
+Sets a posterior comment at an address; the boolean specifies whether the 
+    comment repeats.<br>
+</div>
+<pre><span id="VALset_func_cmt"><span class="keyword">val</span> set_func_cmt</span> : <code class="type">int32 -> string -> bool -> unit</code></pre><div class="info">
+Sets a comment at the beginning of the function, whose repeatability is 
+    determined by the third argument<br>
+</div>
+<pre><span id="VALmsg"><span class="keyword">val</span> msg</span> : <code class="type">('a, unit, string, unit) Pervasives.format4 -> 'a</code></pre><div class="info">
+Prints a formatted message into IDA's status window.<br>
+</div>
+<pre><span id="VALwarning"><span class="keyword">val</span> warning</span> : <code class="type">('a, unit, string, unit) Pervasives.format4 -> 'a</code></pre><div class="info">
+Displays a pop-up warning message box from a format string.<br>
+</div>
+<pre><span id="VALfind_func_begin"><span class="keyword">val</span> find_func_begin</span> : <code class="type">int32 -> int32 option</code></pre><div class="info">
+Returns the beginning of the function given by the address, if the function
+    is properly declared as such inside of IDA.<br>
+</div>
+<pre><span id="VALget_byte"><span class="keyword">val</span> get_byte</span> : <code class="type">int32 -> int32</code></pre><div class="info">
+Return a byte from a location.  Have an option here?<br>
+</div>
+<pre><span id="VALget_word"><span class="keyword">val</span> get_word</span> : <code class="type">int32 -> int32</code></pre><pre><span id="VALget_dword"><span class="keyword">val</span> get_dword</span> : <code class="type">int32 -> int32</code></pre><pre><span id="VALput_byte"><span class="keyword">val</span> put_byte</span> : <code class="type">int32 -> int32 -> bool</code></pre><div class="info">
+Put a byte at a location.<br>
+</div>
+<pre><span id="VALget_many_bytes"><span class="keyword">val</span> get_many_bytes</span> : <code class="type">int32 -> int32 -> int32 list</code></pre><div class="info">
+Returns a list of a number of bytes from an address.<br>
+</div>
+<pre><span id="VALjumpto"><span class="keyword">val</span> jumpto</span> : <code class="type">int32 -> bool</code></pre><div class="info">
+Jumps to the given address in the current disassembly pane.<br>
+</div>
+<pre><span id="VALget_mem_byte"><span class="keyword">val</span> get_mem_byte</span> : <code class="type">int32 -> int32</code></pre><div class="info">
+Retrieves a byte from memory during debugging.  Should be part of another 
+    module.<br>
+</div>
+<pre><span id="VALadd_ocaml_hotkey"><span class="keyword">val</span> add_ocaml_hotkey</span> : <code class="type">string -> int -> bool</code></pre><div class="info">
+Adds a hotkey to the internal hot key manager.  Should be part of another 
+    module.<br>
+</div>
+<pre><span id="VALdel_ocaml_hotkey"><span class="keyword">val</span> del_ocaml_hotkey</span> : <code class="type">string -> bool</code></pre><div class="info">
+Removes a hotkey from the internal hot key manager.  Should be part of 
+    another module.<br>
+</div>
+<pre><span id="VALstep_into"><span class="keyword">val</span> step_into</span> : <code class="type">unit -> bool</code></pre><div class="info">
+Issues a single-step command.  Should be part of another module.<br>
+</div>
+</body></html>
